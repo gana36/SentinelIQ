@@ -1,0 +1,22 @@
+[
+  {"date": "2023-02-08", "ticker": "GOOGL", "event": "Google announces Bard AI chatbot amid ChatGPT competition fears", "outcome": "Stock dropped 9% initially, recovered within 2 weeks", "sentiment": "negative", "sector": "Technology"},
+  {"date": "2022-10-27", "ticker": "META", "event": "Meta reports Q3 earnings miss; Zuckerberg doubles down on metaverse investment", "outcome": "Stock fell 25% in after-hours trading", "sentiment": "negative", "sector": "Technology"},
+  {"date": "2023-07-19", "ticker": "TSLA", "event": "Tesla beats Q2 delivery estimates; price cuts drive volume growth", "outcome": "Stock surged 10% on earnings day", "sentiment": "positive", "sector": "Automotive"},
+  {"date": "2023-11-01", "ticker": "AAPL", "event": "Apple reports FY Q4 earnings beat; iPhone 15 demand strong in China", "outcome": "Stock rose 2% after hours", "sentiment": "positive", "sector": "Technology"},
+  {"date": "2022-05-04", "ticker": "SPY", "event": "Fed raises rates 50bps — largest hike since 2000", "outcome": "Markets initially rallied, then sold off 3% next day", "sentiment": "negative", "sector": "Macro"},
+  {"date": "2023-05-24", "ticker": "NVDA", "event": "Nvidia reports blowout Q1 earnings; raises Q2 guidance by 50%", "outcome": "Stock surged 24% the next day", "sentiment": "positive", "sector": "Semiconductors"},
+  {"date": "2022-11-04", "ticker": "AMZN", "event": "Amazon misses Q3 earnings; AWS growth slows to 20%", "outcome": "Stock dropped 13% in after-hours", "sentiment": "negative", "sector": "Technology"},
+  {"date": "2023-03-10", "ticker": "SIVB", "event": "Silicon Valley Bank discloses emergency share sale; bank run begins", "outcome": "Stock halted after 60% drop; FDIC takeover", "sentiment": "negative", "sector": "Banking"},
+  {"date": "2023-01-26", "ticker": "MSFT", "event": "Microsoft announces major investment in OpenAI; Bing to integrate ChatGPT", "outcome": "Stock rose 3% immediately", "sentiment": "positive", "sector": "Technology"},
+  {"date": "2022-04-26", "ticker": "NFLX", "event": "Netflix reports first subscriber loss in a decade — down 200K", "outcome": "Stock crashed 35% in after-hours", "sentiment": "negative", "sector": "Media"},
+  {"date": "2023-09-12", "ticker": "AAPL", "event": "Apple iPhone 15 event — USB-C transition announced, titanium design", "outcome": "Stock flat; market expected more innovation", "sentiment": "neutral", "sector": "Technology"},
+  {"date": "2023-06-16", "ticker": "TSLA", "event": "Tesla secures major charging network deals with Ford and GM", "outcome": "Stock rose 5% on partnership announcements", "sentiment": "positive", "sector": "Automotive"},
+  {"date": "2022-08-10", "ticker": "SPY", "event": "CPI inflation data comes in below expectations at 8.5%", "outcome": "S&P 500 surged 2.1% on cooling inflation signal", "sentiment": "positive", "sector": "Macro"},
+  {"date": "2023-10-19", "ticker": "NFLX", "event": "Netflix Q3 earnings beat; ads tier subscribers growing fast", "outcome": "Stock rose 16% on strong subscriber additions", "sentiment": "positive", "sector": "Media"},
+  {"date": "2022-01-14", "ticker": "JPM", "event": "JPMorgan misses Q4 earnings; warns on rising expenses and rates", "outcome": "Stock fell 6% — worst day in 18 months", "sentiment": "negative", "sector": "Banking"},
+  {"date": "2023-04-25", "ticker": "META", "event": "Meta Q1 earnings — revenue beats, Reels monetization improving", "outcome": "Stock surged 13% on Year of Efficiency results", "sentiment": "positive", "sector": "Technology"},
+  {"date": "2022-09-13", "ticker": "SPY", "event": "CPI comes in hotter than expected — core CPI at 6.3%", "outcome": "S&P 500 crashed 4.3% on rate hike fears", "sentiment": "negative", "sector": "Macro"},
+  {"date": "2023-08-01", "ticker": "AMZN", "event": "Amazon Q2 earnings beat; AWS acceleration surprises analysts", "outcome": "Stock rose 8% after hours", "sentiment": "positive", "sector": "Technology"},
+  {"date": "2022-07-26", "ticker": "GOOGL", "event": "Alphabet misses Q2 revenue; YouTube ads decline for first time", "outcome": "Stock fell 5% after hours", "sentiment": "negative", "sector": "Technology"},
+  {"date": "2023-12-13", "ticker": "SPY", "event": "Fed signals 3 rate cuts in 2024 at December FOMC meeting", "outcome": "S&P 500 rallied 1.4%; Santa Claus rally begins", "sentiment": "positive", "sector": "Macro"}
+]

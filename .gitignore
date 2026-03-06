@@ -1,0 +1,24 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+
+# ML models (generated — not committed)
+models/
+
+# HuggingFace model cache
+.cache/
+
+# IDE
+.vscode/
+.idea/
+
+sentineliq
+frontend/node_modules/

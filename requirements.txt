@@ -1,0 +1,52 @@
+# Web Framework
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+websockets==12.0
+python-multipart==0.0.9
+httpx==0.27.0
+
+# Auth & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+
+# Config
+pydantic==2.7.1
+pydantic-settings==2.2.1
+python-dotenv==1.0.1
+
+# Database
+sqlalchemy[asyncio]==2.0.30
+asyncpg==0.29.0
+alembic==1.13.1
+
+# Cache
+redis[asyncio]==5.0.4
+
+# ML: Sentiment
+transformers==4.41.0
+torch==2.3.0
+sentencepiece==0.2.0
+
+# ML: Anomaly
+scikit-learn==1.4.2
+numpy==1.26.4
+pandas==2.2.2
+joblib==1.4.2
+
+# ML: Embeddings / Vector Search
+faiss-cpu==1.8.0
+
+# AWS Bedrock
+boto3==1.34.100
+botocore==1.34.100
+
+# Data Sources
+asyncpraw==7.7.1
+newsapi-python==0.2.7
+polygon-api-client==1.13.5
+feedparser==6.0.11
+
+# Observability
+structlog==24.1.0
+langsmith==0.1.147

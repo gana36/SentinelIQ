@@ -1,0 +1,32 @@
+[
+  {
+    "ticker": "TSLA",
+    "source": "mock",
+    "event_type": "earnings_beat",
+    "raw_text": "$TSLA just crushed Q4 earnings! EPS beat by 30%, revenue up 25% YoY. Elon Musk hinting at major product announcements next quarter. Cybertruck production ramping faster than expected. Bulls are going absolutely wild! This is the TSLA we've been waiting for. 🚀"
+  },
+  {
+    "ticker": "NVDA",
+    "source": "mock",
+    "event_type": "analyst_upgrade",
+    "raw_text": "BREAKING: Goldman Sachs upgrades $NVDA to Strong Buy with $1,200 price target citing unprecedented AI chip demand. Data center revenue expected to triple in 2025. Jensen Huang's Blackwell architecture is changing everything. Institutional money is flooding in."
+  },
+  {
+    "ticker": "AAPL",
+    "source": "mock",
+    "event_type": "sec_filing",
+    "raw_text": "SEC 8-K Filing: Apple Inc. Apple discloses $90B expanded share buyback program in new 8-K filing. Tim Cook signals strong confidence in long-term growth trajectory as iPhone 16 demand exceeds forecasts in key markets."
+  },
+  {
+    "ticker": "SPY",
+    "source": "mock",
+    "event_type": "macro_event",
+    "raw_text": "BREAKING: Fed Chair Powell signals possible rate cut at next FOMC meeting, citing cooling CPI data and stabilizing labor market. Markets react immediately — $SPY spiking 1.8%, bond yields dropping. This is a major pivot signal. Buy the dip?"
+  },
+  {
+    "ticker": "META",
+    "source": "mock",
+    "event_type": "product_launch",
+    "raw_text": "$META launches next-gen Llama 4 AI model, performance benchmarks beating GPT-4o on coding and reasoning tasks. Zuckerberg announces deep integration into WhatsApp and Instagram. Ad revenue guidance raised for Q1. Stock surging +8% in after-hours trading."
+  }
+]
