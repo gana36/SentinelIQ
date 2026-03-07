@@ -30,3 +30,5 @@ class ActionCard(BaseModel):
     target_users: list[str]
     timestamp: str
     voice_ready: bool = True
+    chart_screenshot_b64: str = ""   # base64 PNG of TradingView chart (empty = no chart)
+    chart_analysis: str = ""          # Nova Lite multimodal chart pattern analysis

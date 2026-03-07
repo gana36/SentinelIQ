@@ -36,7 +36,7 @@ BASE_URL = "http://localhost:8000"
 
 
 def get_token(email: str, password: str) -> str:
-    resp = httpx.post(f"{BASE_URL}/api/v1/auth/login", json={"email": email, "password": password})
+    resp = httpx.post(f"{BASE_URL}/api/v1/auth/login", json={"email": email, "password": password}, timeout=30)
     resp.raise_for_status()
     return resp.json()["access_token"]
 
@@ -46,6 +46,7 @@ def inject(token: str, ticker: str, text: str, event_type: str) -> dict:
         f"{BASE_URL}/api/v1/dev/inject-signal",
         json={"ticker": ticker, "text": text, "event_type": event_type},
         headers={"Authorization": f"Bearer {token}"},
+        timeout=30,
     )
     resp.raise_for_status()
     return resp.json()
@@ -55,8 +56,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ticker", default="TSLA")
     parser.add_argument("--event", default="earnings_beat")
-    parser.add_argument("--email", default="demo@sentineliq.ai")
-    parser.add_argument("--password", default="demo1234")
+    parser.add_argument("--email", default="saiganesh2345sret@gmail.com")
+    parser.add_argument("--password", default="Lemmeknow123@")
     parser.add_argument("--text", default="")
     args = parser.parse_args()
 

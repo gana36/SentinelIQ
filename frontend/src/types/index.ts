@@ -63,6 +63,8 @@ export interface ActionCard {
   target_users: string[]
   timestamp: string
   voice_ready: boolean
+  chart_screenshot_b64?: string
+  chart_analysis?: string
 }
 
 export interface Alert {

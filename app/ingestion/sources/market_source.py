@@ -51,14 +51,18 @@ async def stream() -> AsyncIterator[RawSignal]:
 
         try:
             from polygon import RESTClient
+            from datetime import date, timedelta
             client = RESTClient(settings.polygon_api_key)
             loop = asyncio.get_event_loop()
+            today = date.today().isoformat()
+            yesterday = (date.today() - timedelta(days=1)).isoformat()
 
             for ticker in watched_tickers:
                 aggs = await loop.run_in_executor(
                     None,
-                    lambda t=ticker: list(client.get_aggs(t, 1, "minute", limit=1)),
+                    lambda t=ticker: list(client.get_aggs(t, 1, "minute", from_=yesterday, to=today, limit=1)),
                 )
+                await asyncio.sleep(13)  # free tier: 5 req/min = 12s apart
                 if not aggs:
                     continue
 

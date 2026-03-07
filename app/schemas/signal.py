@@ -19,3 +19,4 @@ class SignalInjectRequest(BaseModel):
     source: str = "mock"
     event_type: str = "custom"
     metadata: dict[str, Any] = {}
+    force: bool = False  # bypass orchestrator, directly dispatch alert (for testing)

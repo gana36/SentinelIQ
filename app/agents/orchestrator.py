@@ -319,6 +319,25 @@ async def _mock_agentic_process(signal: RawSignal, state: dict, tracer) -> None:
     logger.info("mock_agent_decision_compose", ticker=ticker)
 
 
+# ── Nova rate limiter: max 1 call per NOVA_INTERVAL seconds ──────────────────
+import time as _time
+_nova_lock = asyncio.Lock()
+_last_nova_call: float = 0.0
+NOVA_INTERVAL = 10  # seconds between Nova calls (Nova Lite allows ~60 RPM; 10s gives demo speed)
+
+
+async def _acquire_nova_slot() -> None:
+    """Wait until at least NOVA_INTERVAL seconds have passed since last Nova call."""
+    global _last_nova_call
+    async with _nova_lock:
+        now = _time.monotonic()
+        wait = NOVA_INTERVAL - (now - _last_nova_call)
+        if wait > 0:
+            logger.info("nova_rate_limit_wait", seconds=round(wait, 1))
+            await asyncio.sleep(wait)
+        _last_nova_call = _time.monotonic()
+
+
 # ── Real agentic loop (Nova Lite decides tool calls) ──────────────────────────
 
 async def _nova_agentic_process(signal: RawSignal, state: dict, tracer) -> None:
@@ -327,6 +346,8 @@ async def _nova_agentic_process(signal: RawSignal, state: dict, tracer) -> None:
     then iteratively decides which tools to call until it's done.
     Max 10 rounds to prevent infinite loops.
     """
+    await _acquire_nova_slot()  # enforce 1 Nova call per minute
+
     from app.services.bedrock_client import get_bedrock_client
 
     client = get_bedrock_client()
@@ -357,7 +378,22 @@ async def _nova_agentic_process(signal: RawSignal, state: dict, tracer) -> None:
                 toolConfig={"tools": TOOLS},
             )
 
-        response = await loop.run_in_executor(None, _converse)
+        try:
+            response = await loop.run_in_executor(None, _converse)
+        except Exception as e:
+            err = str(e)
+            if "ModelErrorException" in err or "invalid sequence" in err.lower():
+                # Transient Nova Lite tool-use malformation — retry once with fresh messages
+                logger.warning("nova_tool_use_malformed_retry", ticker=state["ticker"], round=round_num + 1)
+                messages = messages[:-1] if len(messages) > 1 else messages  # drop last assistant turn
+                await asyncio.sleep(2)
+                try:
+                    response = await loop.run_in_executor(None, _converse)
+                except Exception:
+                    logger.warning("nova_retry_failed_skipping", ticker=state["ticker"])
+                    break
+            else:
+                raise
         stop_reason = response.get("stopReason")
         output_message = response["output"]["message"]
         messages.append(output_message)
@@ -374,37 +410,41 @@ async def _nova_agentic_process(signal: RawSignal, state: dict, tracer) -> None:
             break
 
         # Execute every tool Nova requested in this round
+        # Bedrock Converse API returns tool use blocks as {"toolUse": {...}}
         tool_results = []
         for block in output_message.get("content", []):
-            if block.get("type") != "toolUse":
+            tool_use = block.get("toolUse")
+            if not tool_use:
                 continue
 
-            tool_name = block["name"]
-            tool_input = block["input"]
-            tool_use_id = block["toolUseId"]
+            tool_name = tool_use["name"]
+            tool_input = tool_use["input"]
+            tool_use_id = tool_use["toolUseId"]
 
             logger.info("nova_tool_call", tool=tool_name, ticker=state["ticker"])
 
             try:
                 result = await _execute_tool(tool_name, tool_input, signal, state)
-                # ── Trace this tool call ──────────────────────────────
                 tracer.record_tool(tool_name, tool_input, result)
                 tool_results.append({
-                    "type": "toolResult",
-                    "toolUseId": tool_use_id,
-                    "content": [{"json": result}],
+                    "toolResult": {
+                        "toolUseId": tool_use_id,
+                        "content": [{"json": result if isinstance(result, dict) else {"value": str(result)}}],
+                    }
                 })
             except Exception as e:
                 logger.error("tool_execution_error", tool=tool_name, error=str(e))
                 tracer.record_tool(tool_name, tool_input, None, error=str(e))
                 tool_results.append({
-                    "type": "toolResult",
-                    "toolUseId": tool_use_id,
-                    "content": [{"text": f"Error: {str(e)}"}],
-                    "status": "error",
+                    "toolResult": {
+                        "toolUseId": tool_use_id,
+                        "content": [{"text": f"Error: {str(e)}"}],
+                        "status": "error",
+                    }
                 })
 
-        messages.append({"role": "user", "content": tool_results})
+        if tool_results:
+            messages.append({"role": "user", "content": tool_results})
 
 
 # ── Public interface ──────────────────────────────────────────────────────────
@@ -413,6 +453,10 @@ class AgentOrchestrator:
     async def process(self, signal: RawSignal) -> None:
         ticker = resolve_ticker(signal.raw_text) or signal.ticker or "UNKNOWN"
         signal.ticker = ticker
+
+        if ticker == "UNKNOWN":
+            logger.debug("signal_skipped_no_ticker", text_preview=signal.raw_text[:80])
+            return
 
         state: dict = {"ticker": ticker, "signal": signal}
 

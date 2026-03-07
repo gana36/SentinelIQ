@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     mock_mode: bool = True
     environment: str = "development"
     access_token_expire_minutes: int = 60 * 24  # 1 day
+    app_base_url: str = "http://localhost:8000"  # used for email confirm links
 
     # Database
     database_url: str = "postgresql+asyncpg://sentinel:sentinel@localhost:5432/sentineliq"
@@ -23,7 +24,7 @@ class Settings(BaseSettings):
     aws_region: str = "us-east-1"
     bedrock_nova_lite_model_id: str = "amazon.nova-lite-v1:0"
     bedrock_nova_sonic_model_id: str = "amazon.nova-sonic-v1:0"
-    bedrock_embedding_model_id: str = "amazon.nova-multimodal-embedding-v1"
+    bedrock_embedding_model_id: str = "amazon.titan-embed-text-v2:0"
 
     # Data Sources
     newsapi_key: str = ""
@@ -40,6 +41,23 @@ class Settings(BaseSettings):
     # Pipeline
     mock_event_interval_seconds: int = 30
     signal_queue_maxsize: int = 500
+
+    # Nova Act + Alpaca
+    nova_act_api_key: str = ""
+    alpaca_email: str = ""
+    alpaca_password: str = ""
+    alpaca_api_key: str = ""
+    alpaca_api_secret: str = ""
+
+    # Email behaviour
+    auto_email_alerts: bool = False   # set True to email on every alert automatically
+
+    # Email (SMTP)
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
 
     # LangSmith observability
     langchain_api_key: str = ""          # LANGCHAIN_API_KEY in env

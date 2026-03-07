@@ -69,6 +69,41 @@ async def analyze(context: dict) -> dict[str, Any]:
         return _mock_analysis(context)
 
 
+async def analyze_chart(ticker: str, chart_png_bytes: bytes) -> str:
+    """Pass a TradingView chart PNG to Nova Lite multimodal. Returns analysis text."""
+    try:
+        from app.services.bedrock_client import get_bedrock_client
+        import asyncio
+
+        client = get_bedrock_client()
+        loop = asyncio.get_event_loop()
+
+        def _call():
+            return client.converse(
+                modelId=settings.bedrock_nova_lite_model_id,
+                messages=[{
+                    "role": "user",
+                    "content": [
+                        {"image": {"format": "png", "source": {"bytes": chart_png_bytes}}},
+                        {"text": (
+                            f"Analyze this {ticker} stock chart. "
+                            "Identify: chart pattern (e.g. ascending wedge, head-and-shoulders, flag, channel), "
+                            "trend direction, key support and resistance levels, volume pattern, "
+                            "and any notable technical signals. "
+                            "Be concise — 3 to 4 sentences, no bullet points."
+                        )},
+                    ],
+                }],
+                inferenceConfig={"maxTokens": 300, "temperature": 0.3},
+            )
+
+        response = await loop.run_in_executor(None, _call)
+        return response["output"]["message"]["content"][0]["text"]
+    except Exception as e:
+        logger.warning("chart_analysis_failed", ticker=ticker, error=str(e))
+        return ""
+
+
 def _mock_analysis(context: dict) -> dict[str, Any]:
     ticker = context.get("ticker", "UNKNOWN")
     sentiment = context.get("sentiment", {})

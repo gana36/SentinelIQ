@@ -1,10 +1,10 @@
-import json
+import asyncio
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
-from app.db.models import Alert
+from app.db.models import Alert, User
 from app.db.session import AsyncSessionLocal
 from app.schemas.alert import ActionCard
 from app.services.cache import publish
@@ -35,8 +35,65 @@ async def dispatch(action_card: ActionCard) -> None:
             # Direct WebSocket push if connected
             await ws_manager.send_to_user(user_id, payload_dict)
 
+            # Auto-send alert email + trade draft (only if enabled)
+            from app.config import settings
+            if settings.auto_email_alerts:
+                result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
+                user = result.scalar_one_or_none()
+                if user:
+                    asyncio.create_task(_send_alert_emails(action_card, user_id, user.email))
+
         try:
             await db.commit()
         except Exception as e:
             logger.error("alert_dispatch_db_error", error=str(e))
             await db.rollback()
+
+
+async def _send_alert_emails(action_card: ActionCard, user_id: str, to_email: str) -> None:
+    import base64
+
+    from app.services.chart_capture import capture_tradingview_chart
+    from app.services.email_sender import send_full_alert_email
+    from app.services.nova_act_trader import _mock_draft
+    from app.services.nova_reasoning import analyze_chart
+    from app.utils.trade_token import create_trade_token
+
+    sentiment_label = (action_card.sentiment or {}).get("label", "neutral")
+    trade_action = "buy" if sentiment_label == "positive" else "sell"
+
+    # Always use mock SVG for email preview — real execution only happens when user confirms
+    draft = _mock_draft(ticker=action_card.ticker, action=trade_action, shares=1, est_price=0.0)
+    screenshot_b64 = draft.screenshot_b64
+    is_mock = True
+
+    trade_token = create_trade_token(
+        user_id=user_id,
+        ticker=action_card.ticker,
+        action=trade_action,
+        shares=1,
+        alert_id=action_card.alert_id,
+    )
+
+    # Capture TradingView chart via Nova Act (headless browser)
+    chart_b64 = ""
+    chart_analysis = ""
+    chart_png = await capture_tradingview_chart(action_card.ticker)
+    if chart_png:
+        chart_b64 = base64.b64encode(chart_png).decode()
+        try:
+            chart_analysis = await analyze_chart(action_card.ticker, chart_png)
+            logger.info("chart_analysis_complete", ticker=action_card.ticker)
+        except Exception as exc:
+            logger.warning("chart_analysis_failed", ticker=action_card.ticker, error=str(exc))
+
+    await send_full_alert_email(
+        to_email=to_email,
+        action_card=action_card,
+        screenshot_b64=screenshot_b64,
+        screenshot_is_mock=is_mock,
+        trade_action=trade_action,
+        trade_token=trade_token,
+        chart_b64=chart_b64,
+        chart_analysis=chart_analysis,
+    )
