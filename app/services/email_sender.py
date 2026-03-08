@@ -114,8 +114,6 @@ async def send_trade_draft_email(
 async def send_full_alert_email(
     to_email: str,
     action_card,  # ActionCard
-    screenshot_b64: str,
-    screenshot_is_mock: bool,
     trade_action: str,
     trade_token: str = "",
     chart_b64: str = "",
@@ -147,7 +145,7 @@ async def send_full_alert_email(
     # Similar historical events
     events_html = ""
     for ev in (action_card.similar_events or [])[:3]:
-        match_pct = int((ev.get("score", 0)) * 100)
+        match_pct = int((ev.get("similarity_score", ev.get("score", 0))) * 100)
         events_html += f"""
         <tr>
           <td style="padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:12px;color:#475569;">{ev.get("date","")}</td>
@@ -180,14 +178,27 @@ async def send_full_alert_email(
         {analysis_para}
       </div>"""
 
-    # Trade form SVG inline (SVG embeds directly — no data: URI needed)
-    screenshot_html = ""
-    if screenshot_b64:
-        raw = base64.b64decode(screenshot_b64)
-        if screenshot_is_mock:
-            screenshot_html = raw.decode("utf-8", errors="replace")
-        else:
-            screenshot_html = f'<img src="data:image/png;base64,{screenshot_b64}" style="width:100%;border-radius:8px;" />'
+    # Trade suggestion card (HTML table — Gmail-safe, replaces SVG which gets stripped)
+    trade_color_local = "#10B981" if trade_action == "buy" else "#EF4444"
+    screenshot_html = f"""
+    <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;">
+      <tr>
+        <td style="color:#64748b;font-size:12px;padding:10px 16px;border-bottom:1px solid #e2e8f0;">SYMBOL</td>
+        <td style="color:#0f1117;font-size:13px;font-weight:700;text-align:right;padding:10px 16px;border-bottom:1px solid #e2e8f0;">${action_card.ticker}</td>
+      </tr>
+      <tr style="background:#ffffff;">
+        <td style="color:#64748b;font-size:12px;padding:10px 16px;border-bottom:1px solid #e2e8f0;">SIDE</td>
+        <td style="color:{trade_color_local};font-size:13px;font-weight:700;text-align:right;padding:10px 16px;border-bottom:1px solid #e2e8f0;">{trade_action.upper()}</td>
+      </tr>
+      <tr>
+        <td style="color:#64748b;font-size:12px;padding:10px 16px;border-bottom:1px solid #e2e8f0;">ORDER TYPE</td>
+        <td style="color:#0f1117;font-size:13px;font-weight:600;text-align:right;padding:10px 16px;border-bottom:1px solid #e2e8f0;">Market</td>
+      </tr>
+      <tr style="background:#ffffff;">
+        <td style="color:#64748b;font-size:12px;padding:10px 16px;">QUANTITY</td>
+        <td style="color:#0f1117;font-size:13px;font-weight:600;text-align:right;padding:10px 16px;">1 share</td>
+      </tr>
+    </table>"""
 
     # Use multipart/related so we can attach the chart PNG as an inline CID image
     msg_related = MIMEMultipart("related")
@@ -282,10 +293,8 @@ async def send_full_alert_email(
       <!-- Trade form -->
       <div style="border-top:1px solid #e2e8f0;padding-top:20px;margin-top:4px;">
         <p style="color:#64748b;font-size:11px;margin:0 0 8px;">NOVA ACT — SUGGESTED TRADE (<span style="color:{trade_color};font-weight:600;">{trade_action.upper()}</span> ${action_card.ticker})</p>
-        <div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;background:#0f1117;">
-          {screenshot_html}
-        </div>
-        <p style="color:#94a3b8;font-size:11px;margin-top:8px;">⚡ Nova Act prepared this order — click below to execute on Alpaca paper trading.</p>
+        {screenshot_html}
+        <p style="color:#94a3b8;font-size:11px;margin-top:8px;">&#9889; Nova Act prepared this order &mdash; click below to execute on Alpaca paper trading.</p>
       </div>
 
       <!-- Proceed with Trade button -->
@@ -399,11 +408,12 @@ async def send_trade_confirmation_email(
     ticker: str,
     action: str,
     shares: int,
-    screenshot_b64: str,
-    is_mock: bool,
     est_price: float = 0.0,
     est_total: float = 0.0,
     order_id: str = "",
+    # kept for backwards-compat with callers that still pass these
+    screenshot_b64: str = "",
+    is_mock: bool = True,
 ) -> None:
     """Confirmation email sent after user clicks 'Proceed with Trade'."""
     if not settings.smtp_user or not settings.smtp_password:

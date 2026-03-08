@@ -14,8 +14,20 @@ from app.utils.logger import logger
 
 async def dispatch(action_card: ActionCard) -> None:
     """Persist alert to DB, publish to Redis, push via WebSocket for each target user."""
+    from app.services.cache import redis_client
+
     async with AsyncSessionLocal() as db:
         for user_id in action_card.target_users:
+            # Dedup: skip if the exact same alert_id was dispatched in the last 15 seconds
+            dedup_key = f"alert_dedup:{action_card.alert_id}:{user_id}"
+            try:
+                already_sent = await redis_client.set(dedup_key, "1", ex=15, nx=True)
+                if not already_sent:
+                    logger.info("alert_dedup_skip", ticker=action_card.ticker, user_id=user_id)
+                    continue
+            except Exception as e:
+                logger.warning("alert_dedup_redis_error", error=str(e))
+
             alert = Alert(
                 id=uuid.UUID(action_card.alert_id) if len(action_card.target_users) == 1 else uuid.uuid4(),
                 user_id=uuid.UUID(user_id),
@@ -55,17 +67,11 @@ async def _send_alert_emails(action_card: ActionCard, user_id: str, to_email: st
 
     from app.services.chart_capture import capture_tradingview_chart
     from app.services.email_sender import send_full_alert_email
-    from app.services.nova_act_trader import _mock_draft
     from app.services.nova_reasoning import analyze_chart
     from app.utils.trade_token import create_trade_token
 
     sentiment_label = (action_card.sentiment or {}).get("label", "neutral")
     trade_action = "buy" if sentiment_label == "positive" else "sell"
-
-    # Always use mock SVG for email preview — real execution only happens when user confirms
-    draft = _mock_draft(ticker=action_card.ticker, action=trade_action, shares=1, est_price=0.0)
-    screenshot_b64 = draft.screenshot_b64
-    is_mock = True
 
     trade_token = create_trade_token(
         user_id=user_id,
@@ -90,8 +96,6 @@ async def _send_alert_emails(action_card: ActionCard, user_id: str, to_email: st
     await send_full_alert_email(
         to_email=to_email,
         action_card=action_card,
-        screenshot_b64=screenshot_b64,
-        screenshot_is_mock=is_mock,
         trade_action=trade_action,
         trade_token=trade_token,
         chart_b64=chart_b64,

@@ -27,7 +27,10 @@ export const useStore = create<AppState>((set) => ({
 
   liveAlerts: [],
   addLiveAlert: (alert) =>
-    set((s) => ({ liveAlerts: [alert, ...s.liveAlerts].slice(0, 50) })),
+    set((s) => {
+      if (s.liveAlerts.some(a => a.alert_id === alert.alert_id)) return s
+      return { liveAlerts: [alert, ...s.liveAlerts].slice(0, 20) }
+    }),
   clearLiveAlerts: () => set({ liveAlerts: [] }),
 
   wsConnected: false,
