@@ -33,7 +33,7 @@ export function useWebSocket() {
             incrementUnread()
             toast.custom(() => (
               <AlertToastContent card={card} />
-            ), { duration: 6000 })
+            ), { id: card.alert_id, duration: 6000 })
           }
         } catch {}
       }

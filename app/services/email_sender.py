@@ -118,6 +118,7 @@ async def send_full_alert_email(
     trade_token: str = "",
     chart_b64: str = "",
     chart_analysis: str = "",
+    sec_filing_b64: str = "",
 ) -> None:
     """Single combined email: alert details + Nova reasoning + sources + trade form."""
     if not settings.smtp_user or not settings.smtp_password:
@@ -159,6 +160,22 @@ async def send_full_alert_email(
     for link in (action_card.source_links or [])[:3]:
         if link:
             sources_html += f'<a href="{link}" style="color:#3b82f6;font-size:12px;display:block;margin-bottom:4px;word-break:break-all;">{link}</a>'
+
+    # SEC EDGAR filings snapshot section
+    sec_png_bytes = base64.b64decode(sec_filing_b64) if sec_filing_b64 else None
+    sec_section_html = ""
+    if sec_png_bytes:
+        sec_section_html = f"""
+      <div style="margin-bottom:20px;">
+        <p style="color:#64748b;font-size:11px;font-weight:600;letter-spacing:0.08em;margin:0 0 10px;">
+          SEC EDGAR &mdash; RECENT 8-K FILINGS &mdash; ${action_card.ticker}
+        </p>
+        <img src="cid:sec_img" style="width:100%;max-width:580px;display:block;border-radius:8px;border:1px solid #e2e8f0;"
+             alt="{action_card.ticker} SEC EDGAR filings" />
+        <p style="color:#94a3b8;font-size:11px;margin:6px 0 0;">
+          Captured live from SEC EDGAR via Nova Act &middot; sec.gov
+        </p>
+      </div>"""
 
     # TradingView chart section — use cid: for Gmail compatibility (data: URIs are blocked)
     chart_png_bytes = base64.b64decode(chart_b64) if chart_b64 else None
@@ -209,6 +226,11 @@ async def send_full_alert_email(
         img_part.add_header("Content-ID", "<chart_img>")
         img_part.add_header("Content-Disposition", "inline", filename=f"{action_card.ticker}_chart.png")
         msg_related.attach(img_part)
+    if sec_png_bytes:
+        sec_part = MIMEImage(sec_png_bytes, "png")
+        sec_part.add_header("Content-ID", "<sec_img>")
+        sec_part.add_header("Content-Disposition", "inline", filename=f"{action_card.ticker}_sec.png")
+        msg_related.attach(sec_part)
 
     msg_related["Subject"] = f"SentinelIQ Alert — ${action_card.ticker} {sentiment_label.upper()} | {nova.get('event_summary','')[:60]}"
     msg_related["From"] = settings.smtp_from or settings.smtp_user
@@ -286,6 +308,9 @@ async def send_full_alert_email(
       {"" if not sources_html else f'''
       <p style="color:#64748b;font-size:11px;margin:0 0 6px;">SOURCES</p>
       <div style="margin-bottom:20px;">{sources_html}</div>'''}
+
+      <!-- SEC EDGAR Filings (Nova Act screenshot) -->
+      {sec_section_html}
 
       <!-- TradingView Chart (Nova Act screenshot + multimodal analysis) -->
       {chart_section_html}

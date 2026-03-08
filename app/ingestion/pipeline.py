@@ -38,7 +38,7 @@ async def inject_signal(signal: RawSignal) -> None:
 
 
 async def _run() -> None:
-    from app.ingestion.sources import mock_source, reddit_source, news_source, market_source, sec_source
+    from app.ingestion.sources import mock_source, reddit_source, news_source, market_source, sec_source, twitter_source
 
     producers = []
 
@@ -49,6 +49,7 @@ async def _run() -> None:
         producers.append(asyncio.create_task(_produce(news_source.stream())))
         producers.append(asyncio.create_task(_produce(market_source.stream())))
         producers.append(asyncio.create_task(_produce(sec_source.stream())))
+        producers.append(asyncio.create_task(_produce(twitter_source.stream())))
 
     consumer = asyncio.create_task(_consume())
     await asyncio.gather(*producers, consumer, return_exceptions=True)
