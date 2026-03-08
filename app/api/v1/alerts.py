@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Alert, User
@@ -56,6 +56,31 @@ async def get_alert(
     if not alert:
         raise HTTPException(status_code=404, detail="Alert not found")
     return _parse_alert(alert)
+
+
+@router.delete("/{alert_id}", status_code=204)
+async def delete_alert(
+    alert_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Alert).where(Alert.id == alert_id, Alert.user_id == current_user.id)
+    )
+    alert = result.scalar_one_or_none()
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    await db.delete(alert)
+    await db.commit()
+
+
+@router.delete("", status_code=204)
+async def clear_all_alerts(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await db.execute(delete(Alert).where(Alert.user_id == current_user.id))
+    await db.commit()
 
 
 @router.patch("/{alert_id}/read", response_model=AlertOut)

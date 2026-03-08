@@ -1,15 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Bell, Filter } from 'lucide-react'
-import { getAlerts } from '../api/alerts'
+import { Bell, Filter, Trash2 } from 'lucide-react'
+import { getAlerts, clearAllAlerts } from '../api/alerts'
 import { ActionCard } from '../components/alerts/ActionCard'
 import { Spinner } from '../components/ui/Spinner'
 import { useStore } from '../store'
+import toast from 'react-hot-toast'
 
 export function Alerts() {
   const [filter, setFilter] = useState<'all' | 'unread'>('all')
+  const [clearing, setClearing] = useState(false)
   const { resetUnread } = useStore()
   const qc = useQueryClient()
+
+  useEffect(() => { resetUnread() }, [])
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['alerts', filter],
@@ -17,7 +21,23 @@ export function Alerts() {
     onSuccess: () => resetUnread(),
   } as any)
 
-  const alerts = (data ?? []).filter((a: any) => filter === 'all' || !a.read_at)
+  const alerts = ((data as any[]) ?? []).filter((a: any) => filter === 'all' || !a.read_at)
+
+  const handleClearAll = async () => {
+    if (!window.confirm('Dismiss all alerts? This cannot be undone.')) return
+    setClearing(true)
+    try {
+      await clearAllAlerts()
+      qc.invalidateQueries({ queryKey: ['alerts'] })
+      toast.success('All alerts cleared')
+    } catch {
+      toast.error('Could not clear alerts')
+    } finally {
+      setClearing(false)
+    }
+  }
+
+  const refresh = () => { refetch(); qc.invalidateQueries({ queryKey: ['alerts'] }) }
 
   return (
     <div className="p-6 space-y-6">
@@ -35,6 +55,15 @@ export function Alerts() {
               {f}
             </button>
           ))}
+          {alerts.length > 0 && (
+            <button
+              onClick={handleClearAll}
+              disabled={clearing}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg text-red-400 border border-red-500/20 hover:bg-red-500/10 transition-colors font-medium">
+              <Trash2 className="w-3.5 h-3.5" />
+              {clearing ? 'Clearing...' : 'Clear All'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -49,7 +78,7 @@ export function Alerts() {
 
       <div className="space-y-3">
         {alerts.map((alert: any) => (
-          <ActionCard key={alert.id} alert={alert} onRead={() => { refetch(); qc.invalidateQueries({ queryKey: ['alerts'] }) }} />
+          <ActionCard key={alert.id} alert={alert} onRead={refresh} onDelete={refresh} />
         ))}
       </div>
     </div>

@@ -56,8 +56,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ticker", default="TSLA")
     parser.add_argument("--event", default="earnings_beat")
-    parser.add_argument("--email", default="saiganesh2345sret@gmail.com")
-    parser.add_argument("--password", default="Lemmeknow123@")
+    parser.add_argument("--email", default="")
+    parser.add_argument("--password", default="")
     parser.add_argument("--text", default="")
     args = parser.parse_args()
 

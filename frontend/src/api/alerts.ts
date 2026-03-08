@@ -8,5 +8,9 @@ export const getAlert = (id: string) => api.get<Alert>(`/alerts/${id}`)
 
 export const markRead = (id: string) => api.patch(`/alerts/${id}/read`)
 
+export const deleteAlert = (id: string) => api.delete(`/alerts/${id}`)
+
+export const clearAllAlerts = () => api.delete('/alerts')
+
 export const voiceExplain = (alertId: string, question: string) =>
   api.post('/voice/explain', { alert_id: alertId, question })

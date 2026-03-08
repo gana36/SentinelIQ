@@ -41,7 +41,7 @@ async def capture_tradingview_chart(ticker: str) -> bytes | None:
     def _run_sync() -> bytes:
         with NovaAct(
             starting_page=url,
-            headless=False,
+            headless=True,
         ) as nova:
             # Dismiss cookie / GDPR consent banner if present
             nova.act(

@@ -12,9 +12,12 @@ export function Dashboard() {
   const { data: alertsData } = useQuery({ queryKey: ['alerts'], queryFn: () => getAlerts(0, 5).then(r => r.data) })
   const { data: signalsData } = useQuery({ queryKey: ['signals-count'], queryFn: () => getLiveSignals().then(r => r.data), refetchInterval: 5000 })
 
-  const recentAlerts = alertsData ?? []
-  const positiveCount = recentAlerts.filter(a => a.payload?.sentiment?.label === 'positive').length
-  const negativeCount = recentAlerts.filter(a => a.payload?.sentiment?.label === 'negative').length
+  const recentAlerts = (alertsData as any[]) ?? []
+  // Deduplicate: don't show DB alerts already visible in the live WebSocket stream
+  const liveAlertIds = new Set(liveAlerts.map(a => a.alert_id))
+  const dedupedRecent = recentAlerts.filter((a: any) => !liveAlertIds.has(a.payload?.alert_id))
+  const positiveCount = recentAlerts.filter((a: any) => a.payload?.sentiment?.label === 'positive').length
+  const negativeCount = recentAlerts.filter((a: any) => a.payload?.sentiment?.label === 'negative').length
 
   return (
     <div className="p-6 space-y-6">
@@ -63,7 +66,7 @@ export function Dashboard() {
           {liveAlerts.map((card) => (
             <ActionCard key={card.alert_id} card={card} compact />
           ))}
-          {recentAlerts.slice(0, 3).map((alert) => (
+          {dedupedRecent.slice(0, 3).map((alert: any) => (
             <ActionCard key={alert.id} alert={alert} compact />
           ))}
         </div>

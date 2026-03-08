@@ -3,7 +3,7 @@ import { Shield, TrendingUp, Clock, AlertTriangle, Mic, ExternalLink, ChevronDow
 import { SentimentBadge } from '../ui/SentimentBadge'
 import { ConfidenceBar } from '../ui/ConfidenceBar'
 import { SourceBadge } from '../ui/SourceBadge'
-import { voiceExplain, markRead } from '../../api/alerts'
+import { voiceExplain, markRead, deleteAlert } from '../../api/alerts'
 import { draftTrade, executeTrade } from '../../api/trade'
 import type { TradeDraft } from '../../api/trade'
 import toast from 'react-hot-toast'
@@ -14,9 +14,10 @@ interface Props {
   card?: ActionCardType
   compact?: boolean
   onRead?: () => void
+  onDelete?: () => void
 }
 
-export function ActionCard({ alert, card: cardProp, compact, onRead }: Props) {
+export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }: Props) {
   const card = cardProp ?? alert?.payload
   if (!card) return null
 
@@ -36,6 +37,21 @@ export function ActionCard({ alert, card: cardProp, compact, onRead }: Props) {
     if (alert?.id) {
       await markRead(alert.id)
       onRead?.()
+    }
+  }
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (alert?.id) {
+      try {
+        await deleteAlert(alert.id)
+        onDelete?.()
+      } catch {
+        toast.error('Could not dismiss alert')
+      }
+    } else {
+      // Live card (no DB id yet) — just remove from UI
+      onDelete?.()
     }
   }
 
@@ -109,6 +125,11 @@ export function ActionCard({ alert, card: cardProp, compact, onRead }: Props) {
           <button onClick={(e) => { e.stopPropagation(); setExpanded(v => !v) }} className="btn-ghost p-1">
             {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
+          {(alert?.id || onDelete) && (
+            <button onClick={handleDelete} className="btn-ghost p-1 text-slate-600 hover:text-red-400 transition-colors" title="Dismiss alert">
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
