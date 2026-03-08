@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     aws_region: str = "us-east-1"
     bedrock_nova_lite_model_id: str = "amazon.nova-lite-v1:0"
     bedrock_nova_sonic_model_id: str = "amazon.nova-sonic-v1:0"
-    bedrock_embedding_model_id: str = "amazon.titan-embed-text-v2:0"
+    bedrock_embedding_model_id: str = "amazon.nova-2-multimodal-embeddings-v1:0"
 
     # Data Sources
     newsapi_key: str = ""
@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     reddit_client_secret: str = ""
     reddit_user_agent: str = "SentinelIQ/1.0"
     polygon_api_key: str = ""
+    twitter_bearer_token: str = ""  # Twitter API v2 Bearer token for cashtag search
 
     # ML
     anomaly_model_path: str = "models/isolation_forest.joblib"

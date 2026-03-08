@@ -66,6 +66,7 @@ async def _send_alert_emails(action_card: ActionCard, user_id: str, to_email: st
     import base64
 
     from app.services.chart_capture import capture_tradingview_chart
+    from app.services.sec_capture import capture_sec_filings
     from app.services.email_sender import send_full_alert_email
     from app.services.nova_reasoning import analyze_chart
     from app.utils.trade_token import create_trade_token
@@ -81,17 +82,28 @@ async def _send_alert_emails(action_card: ActionCard, user_id: str, to_email: st
         alert_id=action_card.alert_id,
     )
 
-    # Capture TradingView chart via Nova Act (headless browser)
+    # Capture TradingView chart + SEC EDGAR filings concurrently via Nova Act
     chart_b64 = ""
     chart_analysis = ""
-    chart_png = await capture_tradingview_chart(action_card.ticker)
-    if chart_png:
+    sec_b64 = ""
+
+    chart_png, sec_png = await asyncio.gather(
+        capture_tradingview_chart(action_card.ticker),
+        capture_sec_filings(action_card.ticker),
+        return_exceptions=True,
+    )
+
+    if isinstance(chart_png, bytes):
         chart_b64 = base64.b64encode(chart_png).decode()
         try:
             chart_analysis = await analyze_chart(action_card.ticker, chart_png)
             logger.info("chart_analysis_complete", ticker=action_card.ticker)
         except Exception as exc:
             logger.warning("chart_analysis_failed", ticker=action_card.ticker, error=str(exc))
+
+    if isinstance(sec_png, bytes):
+        sec_b64 = base64.b64encode(sec_png).decode()
+        logger.info("sec_capture_complete", ticker=action_card.ticker)
 
     await send_full_alert_email(
         to_email=to_email,
@@ -100,4 +112,5 @@ async def _send_alert_emails(action_card: ActionCard, user_id: str, to_email: st
         trade_token=trade_token,
         chart_b64=chart_b64,
         chart_analysis=chart_analysis,
+        sec_filing_b64=sec_b64,
     )

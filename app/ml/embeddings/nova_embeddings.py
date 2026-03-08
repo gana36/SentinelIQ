@@ -8,7 +8,7 @@ from app.utils.logger import logger
 
 
 async def embed_text(text: str) -> np.ndarray:
-    """Return 1024-dim embedding vector for the given text."""
+    """Return 1024-dim embedding vector using Amazon Nova 2 Multimodal Embeddings."""
     if settings.mock_mode:
         return _mock_embed(text)
 
@@ -21,12 +21,22 @@ def _call_bedrock(text: str) -> np.ndarray:
     client = get_bedrock_client()
     response = client.invoke_model(
         modelId=settings.bedrock_embedding_model_id,
-        body=json.dumps({"inputText": text[:2000]}),
+        body=json.dumps({
+            "taskType": "SINGLE_EMBEDDING",
+            "singleEmbeddingParams": {
+                "embeddingPurpose": "GENERIC_INDEX",
+                "embeddingDimension": 1024,
+                "text": {
+                    "truncationMode": "END",
+                    "value": text[:8192],
+                },
+            },
+        }),
         contentType="application/json",
         accept="application/json",
     )
     body = json.loads(response["body"].read())
-    return np.array(body["embedding"], dtype=np.float32)
+    return np.array(body["embeddings"][0]["embedding"], dtype=np.float32)
 
 
 def _mock_embed(text: str) -> np.ndarray:
