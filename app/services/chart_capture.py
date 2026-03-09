@@ -40,9 +40,11 @@ async def capture_tradingview_chart(ticker: str) -> bytes | None:
 
     def _run_sync() -> bytes:
         with NovaAct(
-            starting_page=url,
-            headless=True,
+            starting_page="about:blank",
+            headless=False,
         ) as nova:
+            # Navigate with a longer timeout and wait only for DOM, not full load
+            nova.page.goto(url, timeout=90_000, wait_until="domcontentloaded")
             # Dismiss cookie / GDPR consent banner if present
             nova.act(
                 "If there is a cookie consent banner, privacy notice, "

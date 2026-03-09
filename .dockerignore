@@ -1,0 +1,20 @@
+# Virtual environments
+sentineliq/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Git
+.git/
+.gitignore
+
+# Local dev files
+.env
+docker-compose.yml
+*.md
+
+# IDE
+.vscode/
+.idea/
