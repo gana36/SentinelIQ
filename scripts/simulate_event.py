@@ -41,10 +41,10 @@ def get_token(email: str, password: str) -> str:
     return resp.json()["access_token"]
 
 
-def inject(token: str, ticker: str, text: str, event_type: str) -> dict:
+def inject(token: str, ticker: str, text: str, event_type: str, force: bool = False) -> dict:
     resp = httpx.post(
         f"{BASE_URL}/api/v1/dev/inject-signal",
-        json={"ticker": ticker, "text": text, "event_type": event_type},
+        json={"ticker": ticker, "text": text, "event_type": event_type, "force": force},
         headers={"Authorization": f"Bearer {token}"},
         timeout=30,
     )
@@ -59,6 +59,7 @@ def main():
     parser.add_argument("--email", default="")
     parser.add_argument("--password", default="")
     parser.add_argument("--text", default="")
+    parser.add_argument("--force", action="store_true", help="Bypass Nova — directly dispatch alert (guaranteed for demos)")
     args = parser.parse_args()
 
     print(f"Authenticating as {args.email}...")
@@ -71,9 +72,10 @@ def main():
         if not text:
             text = f"Breaking market signal for ${args.ticker}: {args.event} detected."
 
-    print(f"Injecting signal: {args.ticker} / {args.event}")
-    result = inject(token, args.ticker, text, args.event)
-    print(f"Success! Signal ID: {result['signal_id']}")
+    print(f"Injecting signal: {args.ticker} / {args.event}{' (FORCE)' if args.force else ''}")
+    result = inject(token, args.ticker, text, args.event, force=args.force)
+    key = "alert_id" if args.force else "signal_id"
+    print(f"Success! {'Alert' if args.force else 'Signal'} ID: {result[key]}")
     print("Watch your WebSocket connection for the alert...")
 
 

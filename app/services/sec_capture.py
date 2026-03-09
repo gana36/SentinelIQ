@@ -42,7 +42,7 @@ async def capture_sec_filings(ticker: str) -> bytes | None:
     os.environ.setdefault("NOVA_ACT_API_KEY", settings.nova_act_api_key)
 
     def _run_sync() -> bytes:
-        with NovaAct(starting_page=url, headless=True) as nova:
+        with NovaAct(starting_page=url, headless=False) as nova:
             nova.act(
                 "Wait for the SEC EDGAR filing results table to fully load. "
                 "Do not click anything."
