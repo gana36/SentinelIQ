@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Shield, TrendingUp, Clock, AlertTriangle, Mic, ExternalLink, ChevronDown, ChevronUp, History, ShoppingCart, X, Loader2 } from 'lucide-react'
+import { ExternalLink, ChevronDown, ChevronUp, X, Loader2, Play } from 'lucide-react'
 import { SentimentBadge } from '../ui/SentimentBadge'
 import { ConfidenceBar } from '../ui/ConfidenceBar'
 import { SourceBadge } from '../ui/SourceBadge'
@@ -31,7 +31,6 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
 
   const nova = card.nova_analysis ?? {}
   const isUnread = alert && !alert.read_at
-  const timeHorizonColor = { intraday: 'text-yellow-400', 'short-term': 'text-blue-400', 'long-term': 'text-purple-400' }[nova.time_horizon ?? 'intraday']
 
   const handleRead = async () => {
     if (alert?.id) {
@@ -50,7 +49,6 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
         toast.error('Could not dismiss alert')
       }
     } else {
-      // Live card (no DB id yet) — just remove from UI
       onDelete?.()
     }
   }
@@ -84,7 +82,7 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
       })
       setTradeDraft(null)
       setTradeExecuted(res.data)
-      toast.success(`Nova Act executed: ${tradeDraft.action.toUpperCase()} ${tradeDraft.shares} ${tradeDraft.ticker} — confirmation email sent!`)
+      toast.success(`Trade Sent: ${tradeDraft.action.toUpperCase()} ${tradeDraft.shares} ${tradeDraft.ticker}`)
     } catch {
       toast.error('Nova Act could not execute the trade')
     } finally {
@@ -96,11 +94,11 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
     if (!alert?.id) return
     setVoiceLoading(true)
     try {
-      const res = await voiceExplain(alert.id, 'Why is this stock moving and what should I watch for?')
+      const res = await voiceExplain(alert.id, 'Narrate current analysis context.')
       setVoiceText(res.data.transcript)
       if (isUnread) handleRead()
     } catch {
-      toast.error('Voice explanation unavailable')
+      toast.error('Voice unavailable')
     } finally {
       setVoiceLoading(false)
     }
@@ -108,63 +106,63 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
 
   return (
     <div
-      className={`bg-white border transition-all rounded-xl p-5 ${isUnread ? 'border-emerald-200 bg-emerald-50/20 shadow-sm ring-1 ring-emerald-500/10' : 'border-slate-200 shadow-sm hover:border-slate-300'}`}
+      className={`bg-white border transition-all rounded-xl p-6 ${isUnread ? 'border-indigo-400/30 bg-indigo-50/10 shadow-sm' : 'border-slate-200 shadow-sm hover:border-slate-300'}`}
       onClick={isUnread ? handleRead : undefined}
     >
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="font-semibold tracking-tight text-xl text-slate-900">${card.ticker}</span>
+      <div className="flex items-start justify-between gap-3 mb-5">
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="font-bold tracking-tighter text-2xl text-slate-900">${card.ticker}</span>
           <SentimentBadge label={card.sentiment?.label ?? 'neutral'} confidence={card.sentiment?.confidence} />
-          {isUnread && <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-sm border border-emerald-200">New</span>}
+          {isUnread && <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-sm border border-indigo-100">New Analysis</span>}
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           {nova.time_horizon && (
-            <span className={`text-[10px] font-medium tracking-wide text-slate-500 uppercase`}>{nova.time_horizon}</span>
+            <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase mr-2">{nova.time_horizon}</span>
           )}
-          <button onClick={(e) => { e.stopPropagation(); setExpanded(v => !v) }} className="btn-ghost p-1">
-            {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          <button onClick={(e) => { e.stopPropagation(); setExpanded(v => !v) }} className="p-1.5 text-slate-400 hover:text-slate-900 transition-colors">
+            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
           {(alert?.id || onDelete) && (
-            <button onClick={handleDelete} className="btn-ghost p-1 text-slate-600 hover:text-red-400 transition-colors" title="Dismiss alert">
-              <X className="w-4 h-4" />
+            <button onClick={handleDelete} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors" title="Dismiss">
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
       </div>
 
       {/* Summary */}
-      <p className="text-[15px] text-slate-700 leading-relaxed mb-5">{card.event_summary}</p>
+      <p className="text-[15px] font-medium text-slate-700 leading-relaxed mb-6">{card.event_summary}</p>
 
       {/* Confidence + Credibility */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-2 gap-6 mb-6">
         <ConfidenceBar value={nova.confidence_level ?? 0.5} label="Nova Confidence" />
-        <ConfidenceBar value={card.credibility_score ?? 0.5} label="Source Credibility" />
+        <ConfidenceBar value={card.credibility_score ?? 0.5} label="Source Quality" />
       </div>
 
       {expanded && (
         <>
           {/* Nova Analysis */}
           {nova.primary_driver && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5 pt-4 border-t border-slate-100">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-6 pt-6 border-t border-slate-100">
               <div>
-                <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-1.5"><TrendingUp className="w-3.5 h-3.5" />Primary Driver</div>
-                <p className="text-sm text-slate-700 leading-relaxed">{nova.primary_driver}</p>
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Primary Driver</div>
+                <p className="text-sm font-semibold text-slate-900 leading-relaxed">{nova.primary_driver}</p>
               </div>
               <div>
-                <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-1.5"><Shield className="w-3.5 h-3.5" />Sector Impact</div>
-                <p className="text-sm text-slate-700 leading-relaxed">{nova.sector_impact}</p>
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Sector Impact</div>
+                <p className="text-sm font-semibold text-slate-900 leading-relaxed">{nova.sector_impact}</p>
               </div>
             </div>
           )}
 
           {/* Risk Factors */}
           {nova.risk_factors?.length > 0 && (
-            <div className="mb-5 pt-4 border-t border-slate-100">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-2.5"><AlertTriangle className="w-3.5 h-3.5 text-red-500" />Risk Factors</div>
+            <div className="mb-6 pt-6 border-t border-slate-100">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">Risk Assessment</div>
               <div className="flex flex-wrap gap-2">
                 {nova.risk_factors.map((r, i) => (
-                  <span key={i} className="text-[11px] font-medium bg-red-50 border border-red-200 text-red-600 px-2.5 py-1 rounded-md">{r}</span>
+                  <span key={i} className="text-[11px] font-bold bg-slate-50 border border-slate-200 text-slate-600 px-3 py-1 rounded">{r}</span>
                 ))}
               </div>
             </div>
@@ -172,11 +170,11 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
 
           {/* Recommended Actions */}
           {nova.recommended_actions?.length > 0 && (
-            <div className="mb-5">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-2.5"><Clock className="w-3.5 h-3.5 text-emerald-500" />Recommended Actions</div>
+            <div className="mb-6 pt-6 border-t border-slate-100">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">Strategic Mandates</div>
               <div className="flex flex-wrap gap-2">
                 {nova.recommended_actions.map((a, i) => (
-                  <span key={i} className="text-[11px] font-medium bg-emerald-50 border border-emerald-200 text-emerald-600 px-2.5 py-1 rounded-md">{a}</span>
+                  <span key={i} className="text-[11px] font-bold bg-slate-900 text-white px-3 py-1 rounded shadow-sm">{a}</span>
                 ))}
               </div>
             </div>
@@ -184,19 +182,18 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
 
           {/* Similar Historical Events */}
           {card.similar_events?.length > 0 && (
-            <div className="mb-5 pt-4 border-t border-slate-100">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-3"><History className="w-3.5 h-3.5" />Similar Historical Events</div>
-              <div className="space-y-3">
+            <div className="mb-6 pt-6 border-t border-slate-100">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-4">Historical Regression</div>
+              <div className="space-y-4">
                 {card.similar_events.map((ev, i) => (
-                  <div key={i} className="flex gap-4">
-                    <div className="flex-shrink-0 text-right w-20">
-                      <div className="text-xs text-slate-500">{ev.date}</div>
-                      <div className="text-xs font-semibold text-slate-900">{ev.ticker}</div>
-                      <div className="text-[10px] font-medium text-emerald-600 mt-0.5">{(ev.similarity_score * 100).toFixed(0)}% match</div>
+                  <div key={i} className="flex gap-6 items-start">
+                    <div className="w-24 flex-shrink-0 pt-1">
+                      <div className="text-[11px] font-bold text-slate-400 tabular-nums uppercase tracking-tighter">{ev.date}</div>
+                      <div className="text-[11px] font-bold text-slate-900 mt-0.5">${ev.ticker}</div>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13px] text-slate-700 leading-snug">{ev.event}</p>
-                      <p className="text-[13px] font-medium text-slate-600 mt-0.5">→ {ev.outcome}</p>
+                    <div className="flex-1">
+                      <p className="text-[13px] font-semibold text-slate-900 leading-snug">{ev.event}</p>
+                      <p className="text-[13px] font-medium text-slate-500 mt-1">Impact: {ev.outcome}</p>
                     </div>
                   </div>
                 ))}
@@ -206,56 +203,52 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
 
           {/* TradingView Chart */}
           {card.chart_screenshot_b64 && (
-            <div className="mb-5 pt-4 border-t border-slate-100">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-3">
-                <TrendingUp className="w-3.5 h-3.5" />Trading Context
-              </div>
-              <div className="rounded-lg overflow-hidden border border-slate-200 shadow-sm">
+            <div className="mb-6 pt-6 border-t border-slate-100">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-4">Technical Context</div>
+              <div className="rounded-lg overflow-hidden border border-slate-200 bg-slate-50 grayscale-[0.2] contrast-[1.1]">
                 <img
                   src={`data:image/png;base64,${card.chart_screenshot_b64}`}
-                  alt={`${card.ticker} chart`}
-                  className="w-full"
+                  alt="Market chart"
+                  className="w-full mix-blend-multiply"
                 />
               </div>
               {card.chart_analysis && (
-                <p className="text-sm text-slate-600 mt-3 leading-relaxed">{card.chart_analysis}</p>
+                <p className="text-[13px] font-medium text-slate-600 mt-4 border-l-2 border-slate-200 pl-4">{card.chart_analysis}</p>
               )}
             </div>
           )}
 
           {/* Voice Explanation */}
           {voiceText && (
-            <div className="mb-5 bg-blue-50/50 border border-blue-100 rounded-lg p-4">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-blue-600 mb-2"><Mic className="w-3.5 h-3.5" />Nova Sonic Explanation</div>
-              <p className="text-[15px] text-slate-700 leading-relaxed italic">"{voiceText}"</p>
+            <div className="mb-6 bg-slate-50 border border-slate-200 rounded-lg p-5">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Audio Analysis Transcript</div>
+              <p className="text-sm font-medium text-slate-900 leading-relaxed italic">{voiceText}</p>
             </div>
           )}
 
-          {/* Footer: source links + actions */}
-          <div className="flex items-center justify-between pt-2 border-t border-border">
-            <div className="flex items-center gap-2">
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+            <div className="flex items-center gap-4">
               {card.source_links?.[0] && (
                 <a href={card.source_links[0]} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                  className="text-[11px] font-bold text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-widest flex items-center gap-1"
                   onClick={e => e.stopPropagation()}>
-                  <ExternalLink className="w-3 h-3" />Source
+                  <ExternalLink className="w-2.5 h-2.5" /> Source
                 </a>
               )}
-              <span className="text-xs text-slate-600">{new Date(card.timestamp).toLocaleTimeString()}</span>
+              <span className="text-[11px] font-bold font-mono text-slate-400 uppercase">{new Date(card.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <button onClick={(e) => { e.stopPropagation(); handleDraftTrade('buy') }}
                 disabled={tradeLoading}
-                className="flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors">
-                {tradeLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <ShoppingCart className="w-3 h-3" />}
-                Draft Trade
+                className="text-[11px] font-bold px-4 py-1.5 rounded bg-slate-900 text-white hover:bg-slate-800 transition-all uppercase tracking-widest shadow-sm">
+                {tradeLoading ? 'Preparing...' : 'Draft Position'}
               </button>
               {alert?.id && (
                 <button onClick={(e) => { e.stopPropagation(); handleVoice() }}
                   disabled={voiceLoading}
-                  className="flex items-center gap-1.5 text-xs btn-ghost py-1">
-                  <Mic className={`w-3.5 h-3.5 ${voiceLoading ? 'animate-pulse text-blue-400' : ''}`} />
-                  {voiceLoading ? 'Explaining...' : 'Ask Nova'}
+                  className="p-1.5 text-slate-400 hover:text-slate-900 transition-colors">
+                  <Play className={`w-3.5 h-3.5 ${voiceLoading ? 'animate-pulse' : ''}`} />
                 </button>
               )}
             </div>
@@ -263,89 +256,65 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
         </>
       )}
 
-      {/* Trade Executed Modal */}
-      {tradeExecuted && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm"
-          onClick={() => setTradeExecuted(null)}>
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-xl"
+      {/* Modals: Simple Grayscale aesthetics */}
+      {(tradeExecuted || tradeDraft) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]"
+          onClick={() => { setTradeExecuted(null); setTradeDraft(null) }}>
+          <div className="bg-white border border-slate-200 rounded-xl p-8 w-full max-w-xl mx-4 shadow-2xl"
             onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="font-semibold tracking-tight text-slate-900 text-lg">Trade Executed ✓</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Nova Act submitted your paper trade{tradeExecuted.is_mock ? ' (mock)' : ''}. Confirmation email sent.</p>
-              </div>
-              <button onClick={() => setTradeExecuted(null)} className="btn-ghost p-1.5 text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
-            </div>
-            <div className="rounded-xl overflow-hidden border border-slate-200 mb-4 bg-slate-50 shadow-sm">
-              <img
-                src={`data:image/svg+xml;base64,${tradeExecuted.screenshot_b64}`}
-                alt="Nova Act execution screenshot"
-                className="w-full"
-              />
-            </div>
-            <button onClick={() => setTradeExecuted(null)}
-              className="w-full py-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors text-sm font-semibold">
-              Done
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Trade Draft Modal */}
-      {tradeDraft && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm"
-          onClick={() => setTradeDraft(null)}>
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-xl"
-            onClick={e => e.stopPropagation()}>
-            {/* Modal header */}
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="font-semibold tracking-tight text-slate-900 text-lg">Nova Act — Trade Draft</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Review before confirming. No real money involved{tradeDraft.is_mock ? ' (mock)' : ' (paper trading)'}.</p>
-              </div>
-              <button onClick={() => setTradeDraft(null)} className="btn-ghost p-1.5 text-slate-400 hover:text-slate-600">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Screenshot */}
-            <div className="rounded-xl overflow-hidden border border-slate-200 mb-4 bg-slate-50 shadow-sm">
-              <img
-                src={`data:${tradeDraft.screenshot_mime};base64,${tradeDraft.screenshot_b64}`}
-                alt="Nova Act trade form screenshot"
-                className="w-full"
-              />
-            </div>
-
-            {/* Order summary */}
-            <div className="grid grid-cols-4 gap-3 mb-5 text-center">
-              {[
-                { label: 'Ticker', value: `$${tradeDraft.ticker}` },
-                { label: 'Action', value: tradeDraft.action.toUpperCase(), color: tradeDraft.action === 'buy' ? 'text-emerald-400' : 'text-red-400' },
-                { label: 'Shares', value: tradeDraft.shares },
-                { label: 'Est. Total', value: `$${tradeDraft.est_total.toLocaleString()}` },
-              ].map(({ label, value, color }) => (
-                <div key={label} className="bg-slate-50 border border-slate-100 rounded-lg p-2.5">
-                  <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500 mb-1">{label}</div>
-                  <div className={`text-[15px] font-semibold font-mono ${color ?? 'text-slate-900'}`}>{value}</div>
+            {tradeExecuted && (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold tracking-tight text-slate-900">Execution Receipt</h3>
+                    <p className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">Automated trade mandate processed</p>
+                  </div>
+                  <button onClick={() => setTradeExecuted(null)} className="p-1 text-slate-400 hover:text-slate-900"><X className="w-4 h-4" /></button>
                 </div>
-              ))}
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-3">
-              <button onClick={() => setTradeDraft(null)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-[13px] font-medium">
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmTrade}
-                disabled={executeLoading}
-                className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-colors flex items-center justify-center gap-2 ${tradeDraft.action === 'buy' ? 'bg-emerald-500 hover:bg-emerald-400 text-black' : 'bg-red-500 hover:bg-red-400 text-white'}`}>
-                {executeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                {executeLoading ? 'Nova Act executing...' : `Confirm ${tradeDraft.action.toUpperCase()}`}
-              </button>
-            </div>
+                <div className="rounded-lg overflow-hidden border border-slate-200 mb-6 bg-slate-50 grayscale">
+                  <img src={`data:image/svg+xml;base64,${tradeExecuted.screenshot_b64}`} alt="Receipt" className="w-full" />
+                </div>
+                <button onClick={() => setTradeExecuted(null)}
+                  className="w-full py-3 rounded-lg bg-slate-900 text-white font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition-all">
+                  Close Receipt
+                </button>
+              </>
+            )}
+            {tradeDraft && (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold tracking-tight text-slate-900">Trade Approval</h3>
+                    <p className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">Review mandate before final execution</p>
+                  </div>
+                  <button onClick={() => setTradeDraft(null)} className="p-1 text-slate-400 hover:text-slate-900"><X className="w-4 h-4" /></button>
+                </div>
+                <div className="rounded-lg overflow-hidden border border-slate-200 mb-6 bg-slate-50 grayscale">
+                  <img src={`data:${tradeDraft.screenshot_mime};base64,${tradeDraft.screenshot_b64}`} alt="Draft" className="w-full" />
+                </div>
+                <div className="grid grid-cols-4 gap-4 mb-8">
+                  {[
+                    { label: 'Asset', value: `${tradeDraft.ticker}` },
+                    { label: 'Type', value: tradeDraft.action.toUpperCase() },
+                    { label: 'Volume', value: tradeDraft.shares },
+                    { label: 'Value', value: `$${tradeDraft.est_total.toLocaleString()}` },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="border-b border-slate-100 pb-2">
+                      <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">{label}</div>
+                      <div className="text-sm font-bold text-slate-900 font-mono">{value}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-4">
+                  <button onClick={() => setTradeDraft(null)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:text-slate-900 uppercase tracking-widest transition-colors">Abort</button>
+                  <button onClick={handleConfirmTrade} disabled={executeLoading}
+                    className="flex-1 py-3 bg-slate-900 text-white font-bold text-sm uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-lg flex items-center justify-center gap-2">
+                    {executeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    Confirm Mandate
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

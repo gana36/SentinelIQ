@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import { Activity } from 'lucide-react'
 import { getLiveSignals } from '../../api/market'
 import { SourceBadge } from '../ui/SourceBadge'
 import { Spinner } from '../ui/Spinner'

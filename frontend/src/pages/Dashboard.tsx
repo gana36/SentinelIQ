@@ -2,7 +2,6 @@ import { useStore } from '../store'
 import { ActionCard } from '../components/alerts/ActionCard'
 import { SignalFeed } from '../components/signals/SignalFeed'
 import { WebSocketStatus } from '../components/ui/WebSocketStatus'
-import { Zap, TrendingUp, TrendingDown, Activity } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { getAlerts } from '../api/alerts'
 import { getLiveSignals } from '../api/market'
@@ -20,47 +19,43 @@ export function Dashboard() {
   const negativeCount = recentAlerts.filter((a: any) => a.payload?.sentiment?.label === 'negative').length
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-10 space-y-10 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-end justify-between border-b border-slate-100 pb-8">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-content-primary">Dashboard</h1>
-          <p className="text-sm text-content-secondary mt-0.5">Real-time market intelligence</p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+          <p className="text-sm font-medium text-slate-500 mt-1">Real-time market intelligence streaming</p>
         </div>
         <WebSocketStatus />
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Live Alerts', value: liveAlerts.length, icon: Zap },
-          { label: 'Signals Processed', value: signalsData?.count ?? 0, icon: Activity },
-          { label: 'Positive Signals', value: positiveCount, icon: TrendingUp },
-          { label: 'Negative Signals', value: negativeCount, icon: TrendingDown },
-        ].map(({ label, value, icon: Icon }) => (
-          <div key={label} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-slate-500">{label}</span>
-              <Icon className="w-3.5 h-3.5 text-slate-400" />
-            </div>
-            <div className="text-3xl font-semibold tracking-tight text-slate-900">{value}</div>
+          { label: 'Live Alerts', value: liveAlerts.length },
+          { label: 'Signals Processed', value: signalsData?.count ?? 0 },
+          { label: 'Positive Signals', value: positiveCount },
+          { label: 'Negative Signals', value: negativeCount },
+        ].map(({ label, value }) => (
+          <div key={label} className="bg-white border border-slate-200/80 rounded-xl p-6 shadow-[0_1px_2px_rgba(0,0,0,0,02)]">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">{label}</div>
+            <div className="text-3xl font-bold tracking-tight text-slate-900">{value}</div>
           </div>
         ))}
       </div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Live Alerts Stream */}
-        <div className="lg:col-span-2 space-y-3">
-          <h2 className="text-[15px] font-semibold text-slate-900 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-            Live Alerts
+        <div className="lg:col-span-2 space-y-4">
+          <h2 className="text-[13px] font-bold uppercase tracking-[0.15em] text-slate-400 flex items-center gap-3 mb-2">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+            Live Activity
           </h2>
           {liveAlerts.length === 0 && recentAlerts.length === 0 && (
-            <div className="card text-center py-12 text-content-secondary">
-              <Zap className="w-8 h-8 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">Waiting for signals...</p>
-              <p className="text-xs mt-1">Connect your watchlist to start receiving alerts</p>
+            <div className="bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl text-center py-20">
+              <p className="text-sm font-semibold text-slate-900">Listening for market signals...</p>
+              <p className="text-xs text-slate-400 mt-1.5">Configure your watchlist to begin automated analysis</p>
             </div>
           )}
           {liveAlerts.map((card) => (
@@ -72,7 +67,7 @@ export function Dashboard() {
         </div>
 
         {/* Signal Feed */}
-        <div className="h-[500px]">
+        <div className="h-[600px]">
           <SignalFeed />
         </div>
       </div>
