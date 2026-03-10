@@ -3,40 +3,37 @@
 @tailwind utilities;
 
 @layer base {
-  body { 
-    @apply bg-app text-content-primary font-sans antialiased; 
+  body {
+    @apply bg-app text-content-primary font-sans antialiased;
   }
-  ::-webkit-scrollbar { 
-    @apply w-1.5; 
+
+  ::-webkit-scrollbar {
+    @apply w-1.5;
   }
-  ::-webkit-scrollbar-track { 
-    @apply bg-transparent; 
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
   }
-  ::-webkit-scrollbar-thumb { 
-    @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors; 
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
   }
 }
 
 @layer components {
-  .card { 
-    @apply bg-card border border-border rounded-xl p-4 shadow-sm; 
+  .card {
+    @apply bg-card border border-border rounded-xl p-5 shadow-sm;
   }
-  .btn-primary { 
-    @apply bg-content-primary hover:bg-slate-800 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed; 
+
+  .btn-primary {
+    @apply bg-content-primary hover:bg-slate-800 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  .btn-ghost { 
-    @apply text-content-secondary hover:text-content-primary hover:bg-surface-hover px-3 py-2 rounded-lg transition-colors; 
+
+  .btn-ghost {
+    @apply text-content-secondary hover:text-content-primary hover:bg-surface-hover px-3 py-2 rounded-lg transition-colors;
   }
-  .input { 
-    @apply bg-white border border-border rounded-lg px-3 py-2 text-content-primary placeholder-content-tertiary focus:outline-none focus:border-content-secondary focus:ring-1 focus:ring-content-secondary transition-colors w-full shadow-sm; 
-  }
-  .badge-positive { 
-    @apply bg-positive-bg text-positive border border-positive-border text-xs px-2 py-0.5 rounded-full font-medium; 
-  }
-  .badge-negative { 
-    @apply bg-negative-bg text-negative border border-negative-border text-xs px-2 py-0.5 rounded-full font-medium; 
-  }
-  .badge-neutral { 
-    @apply bg-surface-hover text-content-secondary border border-border-subtle text-xs px-2 py-0.5 rounded-full font-medium; 
+
+  .input {
+    @apply bg-white border border-border rounded-lg px-3 py-2 text-content-primary placeholder-content-tertiary focus:outline-none focus:border-content-secondary focus:ring-1 focus:ring-content-secondary transition-colors w-full shadow-sm;
   }
 }

@@ -20,7 +20,7 @@ export function Dashboard() {
   const negativeCount = recentAlerts.filter((a: any) => a.payload?.sentiment?.label === 'negative').length
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -31,19 +31,19 @@ export function Dashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         {[
-          { label: 'Live Alerts', value: liveAlerts.length, icon: Zap, color: 'text-emerald-400' },
-          { label: 'Signals Processed', value: signalsData?.count ?? 0, icon: Activity, color: 'text-blue-400' },
-          { label: 'Positive Signals', value: positiveCount, icon: TrendingUp, color: 'text-emerald-400' },
-          { label: 'Negative Signals', value: negativeCount, icon: TrendingDown, color: 'text-red-400' },
-        ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="card">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-content-secondary">{label}</span>
-              <Icon className={`w-4 h-4 ${color}`} />
+          { label: 'Live Alerts', value: liveAlerts.length, icon: Zap },
+          { label: 'Signals Processed', value: signalsData?.count ?? 0, icon: Activity },
+          { label: 'Positive Signals', value: positiveCount, icon: TrendingUp },
+          { label: 'Negative Signals', value: negativeCount, icon: TrendingDown },
+        ].map(({ label, value, icon: Icon }) => (
+          <div key={label} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-medium text-slate-500">{label}</span>
+              <Icon className="w-3.5 h-3.5 text-slate-400" />
             </div>
-            <div className="text-3xl font-semibold tracking-tight font-mono text-content-primary">{value}</div>
+            <div className="text-3xl font-semibold tracking-tight text-slate-900">{value}</div>
           </div>
         ))}
       </div>
@@ -52,8 +52,8 @@ export function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Live Alerts Stream */}
         <div className="lg:col-span-2 space-y-3">
-          <h2 className="text-base font-medium text-content-primary flex items-center gap-2">
-            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+          <h2 className="text-[15px] font-semibold text-slate-900 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
             Live Alerts
           </h2>
           {liveAlerts.length === 0 && recentAlerts.length === 0 && (

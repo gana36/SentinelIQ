@@ -4,15 +4,15 @@ interface Props { label: string; confidence?: number; size?: 'sm' | 'md' }
 
 export function SentimentBadge({ label, confidence, size = 'md' }: Props) {
   const cfg = {
-    positive: { cls: 'badge-positive', Icon: TrendingUp },
-    negative: { cls: 'badge-negative', Icon: TrendingDown },
-    neutral:  { cls: 'badge-neutral', Icon: Minus },
-  }[label] ?? { cls: 'badge-neutral', Icon: Minus }
+    positive: { cls: 'text-emerald-600', Icon: TrendingUp },
+    negative: { cls: 'text-red-500', Icon: TrendingDown },
+    neutral: { cls: 'text-slate-500', Icon: Minus },
+  }[label] ?? { cls: 'text-slate-500', Icon: Minus }
 
   return (
-    <span className={`inline-flex items-center gap-1 ${cfg.cls} ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
+    <span className={`inline-flex items-center gap-1 font-medium ${cfg.cls} ${size === 'sm' ? 'text-[11px]' : 'text-xs'}`}>
       <cfg.Icon className="w-3 h-3" />
-      {label.toUpperCase()}
+      <span className="tracking-wide text-[10px] uppercase.">{label}</span>
       {confidence !== undefined && (
         <span className="opacity-70 ml-1">{(confidence * 100).toFixed(0)}%</span>
       )}

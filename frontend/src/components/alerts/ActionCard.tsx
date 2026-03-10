@@ -108,19 +108,19 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
 
   return (
     <div
-      className={`card transition-all hover:border-slate-700 ${isUnread ? 'border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.05)]' : ''}`}
+      className={`bg-white border transition-all rounded-xl p-5 ${isUnread ? 'border-emerald-200 bg-emerald-50/20 shadow-sm ring-1 ring-emerald-500/10' : 'border-slate-200 shadow-sm hover:border-slate-300'}`}
       onClick={isUnread ? handleRead : undefined}
     >
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-mono font-semibold tracking-tight text-xl text-content-primary">${card.ticker}</span>
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <span className="font-semibold tracking-tight text-xl text-slate-900">${card.ticker}</span>
           <SentimentBadge label={card.sentiment?.label ?? 'neutral'} confidence={card.sentiment?.confidence} />
-          {isUnread && <span className="text-xs bg-emerald-500 text-black px-2 py-0.5 rounded-full font-medium">New</span>}
+          {isUnread && <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-sm border border-emerald-200">New</span>}
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           {nova.time_horizon && (
-            <span className={`text-xs font-mono ${timeHorizonColor}`}>{nova.time_horizon.toUpperCase()}</span>
+            <span className={`text-[10px] font-medium tracking-wide text-slate-500 uppercase`}>{nova.time_horizon}</span>
           )}
           <button onClick={(e) => { e.stopPropagation(); setExpanded(v => !v) }} className="btn-ghost p-1">
             {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -134,10 +134,10 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
       </div>
 
       {/* Summary */}
-      <p className="text-sm text-content-secondary leading-relaxed mb-3">{card.event_summary}</p>
+      <p className="text-[15px] text-slate-700 leading-relaxed mb-5">{card.event_summary}</p>
 
       {/* Confidence + Credibility */}
-      <div className="grid grid-cols-2 gap-3 mb-3">
+      <div className="grid grid-cols-2 gap-4 mb-4">
         <ConfidenceBar value={nova.confidence_level ?? 0.5} label="Nova Confidence" />
         <ConfidenceBar value={card.credibility_score ?? 0.5} label="Source Credibility" />
       </div>
@@ -146,25 +146,25 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
         <>
           {/* Nova Analysis */}
           {nova.primary_driver && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-              <div className="bg-app rounded-lg p-3">
-                <div className="flex items-center gap-1.5 text-xs font-medium text-content-secondary mb-1"><TrendingUp className="w-3 h-3" />Primary Driver</div>
-                <p className="text-sm text-content-secondary">{nova.primary_driver}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5 pt-4 border-t border-slate-100">
+              <div>
+                <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-1.5"><TrendingUp className="w-3.5 h-3.5" />Primary Driver</div>
+                <p className="text-sm text-slate-700 leading-relaxed">{nova.primary_driver}</p>
               </div>
-              <div className="bg-app rounded-lg p-3">
-                <div className="flex items-center gap-1.5 text-xs font-medium text-content-secondary mb-1"><Shield className="w-3 h-3" />Sector Impact</div>
-                <p className="text-sm text-content-secondary">{nova.sector_impact}</p>
+              <div>
+                <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-1.5"><Shield className="w-3.5 h-3.5" />Sector Impact</div>
+                <p className="text-sm text-slate-700 leading-relaxed">{nova.sector_impact}</p>
               </div>
             </div>
           )}
 
           {/* Risk Factors */}
           {nova.risk_factors?.length > 0 && (
-            <div className="mb-3">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-content-secondary mb-2"><AlertTriangle className="w-3 h-3" />Risk Factors</div>
-              <div className="flex flex-wrap gap-1.5">
+            <div className="mb-5 pt-4 border-t border-slate-100">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-2.5"><AlertTriangle className="w-3.5 h-3.5 text-red-500" />Risk Factors</div>
+              <div className="flex flex-wrap gap-2">
                 {nova.risk_factors.map((r, i) => (
-                  <span key={i} className="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full">{r}</span>
+                  <span key={i} className="text-[11px] font-medium bg-red-50 border border-red-200 text-red-600 px-2.5 py-1 rounded-md">{r}</span>
                 ))}
               </div>
             </div>
@@ -172,11 +172,11 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
 
           {/* Recommended Actions */}
           {nova.recommended_actions?.length > 0 && (
-            <div className="mb-3">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-content-secondary mb-2"><Clock className="w-3 h-3" />Recommended Actions</div>
-              <div className="flex flex-wrap gap-1.5">
+            <div className="mb-5">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-2.5"><Clock className="w-3.5 h-3.5 text-emerald-500" />Recommended Actions</div>
+              <div className="flex flex-wrap gap-2">
                 {nova.recommended_actions.map((a, i) => (
-                  <span key={i} className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">{a}</span>
+                  <span key={i} className="text-[11px] font-medium bg-emerald-50 border border-emerald-200 text-emerald-600 px-2.5 py-1 rounded-md">{a}</span>
                 ))}
               </div>
             </div>
@@ -184,19 +184,19 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
 
           {/* Similar Historical Events */}
           {card.similar_events?.length > 0 && (
-            <div className="mb-3">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-content-secondary mb-2"><History className="w-3 h-3" />Similar Historical Events</div>
-              <div className="space-y-2">
+            <div className="mb-5 pt-4 border-t border-slate-100">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-3"><History className="w-3.5 h-3.5" />Similar Historical Events</div>
+              <div className="space-y-3">
                 {card.similar_events.map((ev, i) => (
-                  <div key={i} className="bg-app rounded-lg p-2.5 flex gap-3">
-                    <div className="flex-shrink-0 text-right">
-                      <div className="font-mono text-xs text-slate-500">{ev.date}</div>
-                      <div className="font-mono text-xs font-medium text-content-primary">{ev.ticker}</div>
-                      <div className="text-xs text-emerald-400">{(ev.similarity_score * 100).toFixed(0)}% match</div>
+                  <div key={i} className="flex gap-4">
+                    <div className="flex-shrink-0 text-right w-20">
+                      <div className="text-xs text-slate-500">{ev.date}</div>
+                      <div className="text-xs font-semibold text-slate-900">{ev.ticker}</div>
+                      <div className="text-[10px] font-medium text-emerald-600 mt-0.5">{(ev.similarity_score * 100).toFixed(0)}% match</div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-xs text-content-secondary line-clamp-2">{ev.event}</p>
-                      <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">→ {ev.outcome}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] text-slate-700 leading-snug">{ev.event}</p>
+                      <p className="text-[13px] font-medium text-slate-600 mt-0.5">→ {ev.outcome}</p>
                     </div>
                   </div>
                 ))}
@@ -204,13 +204,13 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
             </div>
           )}
 
-          {/* TradingView Chart (Nova Act screenshot + Nova multimodal analysis) */}
+          {/* TradingView Chart */}
           {card.chart_screenshot_b64 && (
-            <div className="mb-3">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
-                <TrendingUp className="w-3 h-3" />TradingView Chart
+            <div className="mb-5 pt-4 border-t border-slate-100">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-3">
+                <TrendingUp className="w-3.5 h-3.5" />Trading Context
               </div>
-              <div className="rounded-lg overflow-hidden border border-border">
+              <div className="rounded-lg overflow-hidden border border-slate-200 shadow-sm">
                 <img
                   src={`data:image/png;base64,${card.chart_screenshot_b64}`}
                   alt={`${card.ticker} chart`}
@@ -218,16 +218,16 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
                 />
               </div>
               {card.chart_analysis && (
-                <p className="text-xs text-slate-400 mt-2 leading-relaxed">{card.chart_analysis}</p>
+                <p className="text-sm text-slate-600 mt-3 leading-relaxed">{card.chart_analysis}</p>
               )}
             </div>
           )}
 
           {/* Voice Explanation */}
           {voiceText && (
-            <div className="mb-3 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-blue-400 mb-2"><Mic className="w-3 h-3" />Nova Sonic Explanation</div>
-              <p className="text-sm text-slate-300 italic">"{voiceText}"</p>
+            <div className="mb-5 bg-blue-50/50 border border-blue-100 rounded-lg p-4">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-blue-600 mb-2"><Mic className="w-3.5 h-3.5" />Nova Sonic Explanation</div>
+              <p className="text-[15px] text-slate-700 leading-relaxed italic">"{voiceText}"</p>
             </div>
           )}
 
@@ -265,18 +265,18 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
 
       {/* Trade Executed Modal */}
       {tradeExecuted && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm"
           onClick={() => setTradeExecuted(null)}>
-          <div className="bg-card border border-emerald-500/50 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl"
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-xl"
             onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="font-semibold tracking-tight text-content-primary text-lg">Trade Executed ✓</h3>
+                <h3 className="font-semibold tracking-tight text-slate-900 text-lg">Trade Executed ✓</h3>
                 <p className="text-xs text-slate-500 mt-0.5">Nova Act submitted your paper trade{tradeExecuted.is_mock ? ' (mock)' : ''}. Confirmation email sent.</p>
               </div>
-              <button onClick={() => setTradeExecuted(null)} className="btn-ghost p-1.5"><X className="w-4 h-4" /></button>
+              <button onClick={() => setTradeExecuted(null)} className="btn-ghost p-1.5 text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
             </div>
-            <div className="rounded-xl overflow-hidden border border-border mb-4 bg-app">
+            <div className="rounded-xl overflow-hidden border border-slate-200 mb-4 bg-slate-50 shadow-sm">
               <img
                 src={`data:image/svg+xml;base64,${tradeExecuted.screenshot_b64}`}
                 alt="Nova Act execution screenshot"
@@ -293,23 +293,23 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
 
       {/* Trade Draft Modal */}
       {tradeDraft && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm"
           onClick={() => setTradeDraft(null)}>
-          <div className="bg-card border border-border rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl"
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-xl"
             onClick={e => e.stopPropagation()}>
             {/* Modal header */}
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="font-semibold tracking-tight text-content-primary text-lg">Nova Act — Trade Draft</h3>
+                <h3 className="font-semibold tracking-tight text-slate-900 text-lg">Nova Act — Trade Draft</h3>
                 <p className="text-xs text-slate-500 mt-0.5">Review before confirming. No real money involved{tradeDraft.is_mock ? ' (mock)' : ' (paper trading)'}.</p>
               </div>
-              <button onClick={() => setTradeDraft(null)} className="btn-ghost p-1.5">
+              <button onClick={() => setTradeDraft(null)} className="btn-ghost p-1.5 text-slate-400 hover:text-slate-600">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Screenshot */}
-            <div className="rounded-xl overflow-hidden border border-border mb-4 bg-app">
+            <div className="rounded-xl overflow-hidden border border-slate-200 mb-4 bg-slate-50 shadow-sm">
               <img
                 src={`data:${tradeDraft.screenshot_mime};base64,${tradeDraft.screenshot_b64}`}
                 alt="Nova Act trade form screenshot"
@@ -325,9 +325,9 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
                 { label: 'Shares', value: tradeDraft.shares },
                 { label: 'Est. Total', value: `$${tradeDraft.est_total.toLocaleString()}` },
               ].map(({ label, value, color }) => (
-                <div key={label} className="bg-app rounded-lg p-2">
-                  <div className="text-xs text-slate-500 mb-1">{label}</div>
-                  <div className={`text-sm font-semibold font-mono ${color ?? 'text-content-primary'}`}>{value}</div>
+                <div key={label} className="bg-slate-50 border border-slate-100 rounded-lg p-2.5">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500 mb-1">{label}</div>
+                  <div className={`text-[15px] font-semibold font-mono ${color ?? 'text-slate-900'}`}>{value}</div>
                 </div>
               ))}
             </div>
@@ -335,7 +335,7 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
             {/* Actions */}
             <div className="flex gap-3">
               <button onClick={() => setTradeDraft(null)}
-                className="flex-1 py-2.5 rounded-xl border border-border text-content-secondary hover:text-content-primary hover:border-content-tertiary transition-colors text-sm">
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-[13px] font-medium">
                 Cancel
               </button>
               <button

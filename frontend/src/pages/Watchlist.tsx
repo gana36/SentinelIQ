@@ -17,8 +17,8 @@ function TickerRow({ ticker, onRemove }: { ticker: string; onRemove: () => void 
   return (
     <div className="card flex items-center justify-between hover:border-slate-700 transition-colors">
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center">
-          <span className="font-mono font-semibold text-emerald-400 text-sm">{ticker[0]}</span>
+        <div className="w-10 h-10 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center shadow-sm">
+          <span className="font-medium text-slate-600 text-[15px]">{ticker[0]}</span>
         </div>
         <div>
           <div className="font-mono font-semibold text-content-primary">${ticker}</div>
@@ -35,8 +35,8 @@ function TickerRow({ ticker, onRemove }: { ticker: string; onRemove: () => void 
               </div>
             </div>
             <div className="text-right hidden sm:block">
-              <div className="text-sm font-medium text-content-secondary">Vol Z-Score</div>
-              <div className={`text-xs font-mono ${Math.abs(data.volume_zscore) > 2 ? 'text-yellow-400' : 'text-content-tertiary'}`}>
+              <div className="text-[11px] font-medium tracking-wide uppercase text-content-secondary">Vol Z-Score</div>
+              <div className={`text-xs font-mono font-medium ${Math.abs(data.volume_zscore) > 2 ? 'text-amber-500' : 'text-slate-400'}`}>
                 {data.volume_zscore.toFixed(2)}σ
               </div>
             </div>
@@ -98,7 +98,7 @@ export function Watchlist() {
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {items?.map(item => (
           <TickerRow key={item.id} ticker={item.ticker} onRemove={() => remove.mutate(item.ticker)} />
         ))}
