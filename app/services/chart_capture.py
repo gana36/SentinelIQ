@@ -41,7 +41,7 @@ async def capture_tradingview_chart(ticker: str) -> bytes | None:
     def _run_sync() -> bytes:
         with NovaAct(
             starting_page="about:blank",
-            headless=False,
+            headless=settings.nova_act_headless,
         ) as nova:
             # Navigate with a longer timeout and wait only for DOM, not full load
             nova.page.goto(url, timeout=90_000, wait_until="domcontentloaded")

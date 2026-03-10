@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     signal_queue_maxsize: int = 500
 
     # Nova Act + Alpaca
+    nova_act_headless: bool = True  # set False locally to show browser during demo
     nova_act_api_key: str = ""
     alpaca_email: str = ""
     alpaca_password: str = ""

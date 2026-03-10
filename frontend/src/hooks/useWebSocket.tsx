@@ -13,8 +13,10 @@ export function useWebSocket() {
     if (!token) return
 
     const connect = () => {
-      const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
-      const ws = new WebSocket(`${protocol}://${window.location.host}/api/v1/ws/alerts?token=${token}`)
+      const backendUrl = import.meta.env.VITE_API_URL ?? `${window.location.protocol}//${window.location.host}`
+      const wsProtocol = backendUrl.startsWith('https') ? 'wss' : 'ws'
+      const wsHost = backendUrl.replace(/^https?:\/\//, '')
+      const ws = new WebSocket(`${wsProtocol}://${wsHost}/api/v1/ws/alerts?token=${token}`)
       wsRef.current = ws
 
       ws.onopen = () => {
