@@ -9,7 +9,7 @@ const COLORS: Record<string, string> = {
 export function SourceBadge({ source }: { source: string }) {
   const cls = COLORS[source] ?? COLORS.mock
   return (
-    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium uppercase tracking-wide ${cls}`}>
+    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cls}`}>
       {source}
     </span>
   )

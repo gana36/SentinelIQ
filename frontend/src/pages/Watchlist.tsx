@@ -18,25 +18,25 @@ function TickerRow({ ticker, onRemove }: { ticker: string; onRemove: () => void 
     <div className="card flex items-center justify-between hover:border-slate-700 transition-colors">
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center">
-          <span className="font-mono font-bold text-emerald-400 text-sm">{ticker[0]}</span>
+          <span className="font-mono font-semibold text-emerald-400 text-sm">{ticker[0]}</span>
         </div>
         <div>
-          <div className="font-mono font-bold">${ticker}</div>
-          {data && <div className="text-xs text-slate-500">Vol: {data.volume.toLocaleString()}</div>}
+          <div className="font-mono font-semibold text-content-primary">${ticker}</div>
+          {data && <div className="text-xs text-content-secondary">Vol: {data.volume.toLocaleString()}</div>}
         </div>
       </div>
       <div className="flex items-center gap-6">
         {data && (
           <>
             <div className="text-right">
-              <div className="font-mono font-semibold">${data.price.toFixed(2)}</div>
+              <div className="font-mono font-semibold text-content-primary">${data.price.toFixed(2)}</div>
               <div className={`text-xs font-mono ${changeColor}`}>
                 {data.change_pct >= 0 ? '+' : ''}{data.change_pct.toFixed(2)}%
               </div>
             </div>
             <div className="text-right hidden sm:block">
-              <div className="text-xs text-slate-500">Vol Z-Score</div>
-              <div className={`text-xs font-mono ${Math.abs(data.volume_zscore) > 2 ? 'text-yellow-400' : 'text-slate-400'}`}>
+              <div className="text-sm font-medium text-content-secondary">Vol Z-Score</div>
+              <div className={`text-xs font-mono ${Math.abs(data.volume_zscore) > 2 ? 'text-yellow-400' : 'text-content-tertiary'}`}>
                 {data.volume_zscore.toFixed(2)}σ
               </div>
             </div>
@@ -76,8 +76,8 @@ export function Watchlist() {
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-2">
         <Star className="w-5 h-5 text-emerald-400" />
-        <h1 className="text-2xl font-bold">Watchlist</h1>
-        <span className="text-sm text-slate-400 ml-1">({items?.length ?? 0} tickers)</span>
+        <h1 className="text-2xl font-semibold tracking-tight text-content-primary">Watchlist</h1>
+        <span className="text-sm text-content-secondary ml-1">({items?.length ?? 0} tickers)</span>
       </div>
 
       <form onSubmit={handleAdd} className="flex gap-2">
@@ -91,7 +91,7 @@ export function Watchlist() {
       {isLoading && <div className="flex justify-center py-12"><Spinner size="lg" /></div>}
 
       {!isLoading && (items?.length ?? 0) === 0 && (
-        <div className="card text-center py-16 text-slate-500">
+        <div className="card text-center py-16 text-content-secondary">
           <Star className="w-10 h-10 mx-auto mb-3 opacity-20" />
           <p>Your watchlist is empty</p>
           <p className="text-xs mt-1">Add tickers to receive real-time alerts</p>

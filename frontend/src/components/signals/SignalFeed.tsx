@@ -19,7 +19,7 @@ export function SignalFeed() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-emerald-400" />
-          <span className="text-sm font-semibold">Raw Signal Feed</span>
+          <span className="text-base font-medium text-content-primary">Raw Signal Feed</span>
         </div>
         <span className="text-xs text-slate-500 font-mono">{signals.length} signals</span>
       </div>
@@ -29,10 +29,10 @@ export function SignalFeed() {
           <div className="text-center py-8 text-slate-500 text-sm">No signals yet. Start the pipeline.</div>
         )}
         {signals.map((s) => (
-          <div key={s.signal_id} className="bg-[#0a0b0f] rounded-lg p-2.5 border border-[#1e2130] hover:border-slate-700 transition-colors">
+          <div key={s.signal_id} className="bg-app rounded-lg p-2.5 border border-border hover:border-slate-300 transition-colors">
             <div className="flex items-center gap-2 mb-1">
               <SourceBadge source={s.source} />
-              {s.ticker && <span className="font-mono text-xs font-bold text-white">${s.ticker}</span>}
+              {s.ticker && <span className="font-mono text-xs font-medium text-content-primary">${s.ticker}</span>}
               <span className="text-xs text-slate-500 ml-auto font-mono">
                 {new Date(s.timestamp).toLocaleTimeString()}
               </span>

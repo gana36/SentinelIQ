@@ -35,12 +35,12 @@ export function Settings() {
     <div className="p-6 space-y-6 max-w-2xl">
       <div className="flex items-center gap-2">
         <SettingsIcon className="w-5 h-5 text-emerald-400" />
-        <h1 className="text-2xl font-bold">Settings</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-content-primary">Settings</h1>
       </div>
 
       {/* Alert Preferences */}
       <div className="card space-y-5">
-        <div className="flex items-center gap-2 pb-2 border-b border-[#1e2130]">
+        <div className="flex items-center gap-2 pb-2 border-b border-border">
           <Shield className="w-4 h-4 text-slate-400" />
           <h2 className="font-semibold">Alert Preferences</h2>
         </div>
@@ -51,7 +51,7 @@ export function Settings() {
             {(['low', 'medium', 'high'] as const).map(r => (
               <button key={r} onClick={() => setRisk(r)}
                 className={`py-2 rounded-lg text-sm font-medium capitalize transition-colors border
-                  ${currentRisk === r ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'border-[#1e2130] text-slate-400 hover:text-white hover:border-slate-600'}`}>
+                  ${currentRisk === r ? 'bg-positive-bg text-positive border-positive-border' : 'border-border text-content-secondary hover:text-content-primary hover:border-content-tertiary'}`}>
                 {r}
               </button>
             ))}
@@ -79,7 +79,7 @@ export function Settings() {
 
       {/* Demo Controls */}
       <div className="card space-y-4 border-yellow-500/20">
-        <div className="flex items-center gap-2 pb-2 border-b border-[#1e2130]">
+        <div className="flex items-center gap-2 pb-2 border-b border-border">
           <Zap className="w-4 h-4 text-yellow-400" />
           <h2 className="font-semibold">Demo Controls</h2>
           <span className="text-xs text-yellow-500/70 bg-yellow-500/10 border border-yellow-500/20 px-2 py-0.5 rounded-full ml-1">MOCK MODE</span>

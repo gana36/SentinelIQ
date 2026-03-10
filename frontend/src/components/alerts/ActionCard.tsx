@@ -114,9 +114,9 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-mono font-bold text-xl text-white">${card.ticker}</span>
+          <span className="font-mono font-semibold tracking-tight text-xl text-content-primary">${card.ticker}</span>
           <SentimentBadge label={card.sentiment?.label ?? 'neutral'} confidence={card.sentiment?.confidence} />
-          {isUnread && <span className="text-xs bg-emerald-500 text-black px-2 py-0.5 rounded-full font-bold">NEW</span>}
+          {isUnread && <span className="text-xs bg-emerald-500 text-black px-2 py-0.5 rounded-full font-medium">New</span>}
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           {nova.time_horizon && (
@@ -134,7 +134,7 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
       </div>
 
       {/* Summary */}
-      <p className="text-sm text-slate-300 leading-relaxed mb-3">{card.event_summary}</p>
+      <p className="text-sm text-content-secondary leading-relaxed mb-3">{card.event_summary}</p>
 
       {/* Confidence + Credibility */}
       <div className="grid grid-cols-2 gap-3 mb-3">
@@ -147,13 +147,13 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
           {/* Nova Analysis */}
           {nova.primary_driver && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-              <div className="bg-[#0a0b0f] rounded-lg p-3">
-                <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1"><TrendingUp className="w-3 h-3" />PRIMARY DRIVER</div>
-                <p className="text-sm text-slate-300">{nova.primary_driver}</p>
+              <div className="bg-app rounded-lg p-3">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-content-secondary mb-1"><TrendingUp className="w-3 h-3" />Primary Driver</div>
+                <p className="text-sm text-content-secondary">{nova.primary_driver}</p>
               </div>
-              <div className="bg-[#0a0b0f] rounded-lg p-3">
-                <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1"><Shield className="w-3 h-3" />SECTOR IMPACT</div>
-                <p className="text-sm text-slate-300">{nova.sector_impact}</p>
+              <div className="bg-app rounded-lg p-3">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-content-secondary mb-1"><Shield className="w-3 h-3" />Sector Impact</div>
+                <p className="text-sm text-content-secondary">{nova.sector_impact}</p>
               </div>
             </div>
           )}
@@ -161,7 +161,7 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
           {/* Risk Factors */}
           {nova.risk_factors?.length > 0 && (
             <div className="mb-3">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2"><AlertTriangle className="w-3 h-3" />RISK FACTORS</div>
+              <div className="flex items-center gap-1.5 text-xs font-medium text-content-secondary mb-2"><AlertTriangle className="w-3 h-3" />Risk Factors</div>
               <div className="flex flex-wrap gap-1.5">
                 {nova.risk_factors.map((r, i) => (
                   <span key={i} className="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full">{r}</span>
@@ -173,7 +173,7 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
           {/* Recommended Actions */}
           {nova.recommended_actions?.length > 0 && (
             <div className="mb-3">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2"><Clock className="w-3 h-3" />RECOMMENDED ACTIONS</div>
+              <div className="flex items-center gap-1.5 text-xs font-medium text-content-secondary mb-2"><Clock className="w-3 h-3" />Recommended Actions</div>
               <div className="flex flex-wrap gap-1.5">
                 {nova.recommended_actions.map((a, i) => (
                   <span key={i} className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">{a}</span>
@@ -185,17 +185,17 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
           {/* Similar Historical Events */}
           {card.similar_events?.length > 0 && (
             <div className="mb-3">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2"><History className="w-3 h-3" />SIMILAR HISTORICAL EVENTS</div>
+              <div className="flex items-center gap-1.5 text-xs font-medium text-content-secondary mb-2"><History className="w-3 h-3" />Similar Historical Events</div>
               <div className="space-y-2">
                 {card.similar_events.map((ev, i) => (
-                  <div key={i} className="bg-[#0a0b0f] rounded-lg p-2.5 flex gap-3">
+                  <div key={i} className="bg-app rounded-lg p-2.5 flex gap-3">
                     <div className="flex-shrink-0 text-right">
                       <div className="font-mono text-xs text-slate-500">{ev.date}</div>
-                      <div className="font-mono text-xs font-bold text-slate-300">{ev.ticker}</div>
+                      <div className="font-mono text-xs font-medium text-content-primary">{ev.ticker}</div>
                       <div className="text-xs text-emerald-400">{(ev.similarity_score * 100).toFixed(0)}% match</div>
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs text-slate-300 line-clamp-2">{ev.event}</p>
+                      <p className="text-xs text-content-secondary line-clamp-2">{ev.event}</p>
                       <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">→ {ev.outcome}</p>
                     </div>
                   </div>
@@ -208,9 +208,9 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
           {card.chart_screenshot_b64 && (
             <div className="mb-3">
               <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
-                <TrendingUp className="w-3 h-3" />TRADINGVIEW CHART
+                <TrendingUp className="w-3 h-3" />TradingView Chart
               </div>
-              <div className="rounded-lg overflow-hidden border border-[#1e2130]">
+              <div className="rounded-lg overflow-hidden border border-border">
                 <img
                   src={`data:image/png;base64,${card.chart_screenshot_b64}`}
                   alt={`${card.ticker} chart`}
@@ -226,13 +226,13 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
           {/* Voice Explanation */}
           {voiceText && (
             <div className="mb-3 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-              <div className="flex items-center gap-1.5 text-xs text-blue-400 mb-2"><Mic className="w-3 h-3" />NOVA SONIC EXPLANATION</div>
+              <div className="flex items-center gap-1.5 text-xs font-medium text-blue-400 mb-2"><Mic className="w-3 h-3" />Nova Sonic Explanation</div>
               <p className="text-sm text-slate-300 italic">"{voiceText}"</p>
             </div>
           )}
 
           {/* Footer: source links + actions */}
-          <div className="flex items-center justify-between pt-2 border-t border-[#1e2130]">
+          <div className="flex items-center justify-between pt-2 border-t border-border">
             <div className="flex items-center gap-2">
               {card.source_links?.[0] && (
                 <a href={card.source_links[0]} target="_blank" rel="noopener noreferrer"
@@ -267,16 +267,16 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
       {tradeExecuted && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={() => setTradeExecuted(null)}>
-          <div className="bg-[#111318] border border-emerald-500/30 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl"
+          <div className="bg-card border border-emerald-500/50 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl"
             onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="font-bold text-white text-lg">Trade Executed ✓</h3>
+                <h3 className="font-semibold tracking-tight text-content-primary text-lg">Trade Executed ✓</h3>
                 <p className="text-xs text-slate-500 mt-0.5">Nova Act submitted your paper trade{tradeExecuted.is_mock ? ' (mock)' : ''}. Confirmation email sent.</p>
               </div>
               <button onClick={() => setTradeExecuted(null)} className="btn-ghost p-1.5"><X className="w-4 h-4" /></button>
             </div>
-            <div className="rounded-xl overflow-hidden border border-[#1e2130] mb-4 bg-[#0a0b0f]">
+            <div className="rounded-xl overflow-hidden border border-border mb-4 bg-app">
               <img
                 src={`data:image/svg+xml;base64,${tradeExecuted.screenshot_b64}`}
                 alt="Nova Act execution screenshot"
@@ -295,12 +295,12 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
       {tradeDraft && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={() => setTradeDraft(null)}>
-          <div className="bg-[#111318] border border-[#1e2130] rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl"
+          <div className="bg-card border border-border rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl"
             onClick={e => e.stopPropagation()}>
             {/* Modal header */}
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="font-bold text-white text-lg">Nova Act — Trade Draft</h3>
+                <h3 className="font-semibold tracking-tight text-content-primary text-lg">Nova Act — Trade Draft</h3>
                 <p className="text-xs text-slate-500 mt-0.5">Review before confirming. No real money involved{tradeDraft.is_mock ? ' (mock)' : ' (paper trading)'}.</p>
               </div>
               <button onClick={() => setTradeDraft(null)} className="btn-ghost p-1.5">
@@ -309,7 +309,7 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
             </div>
 
             {/* Screenshot */}
-            <div className="rounded-xl overflow-hidden border border-[#1e2130] mb-4 bg-[#0a0b0f]">
+            <div className="rounded-xl overflow-hidden border border-border mb-4 bg-app">
               <img
                 src={`data:${tradeDraft.screenshot_mime};base64,${tradeDraft.screenshot_b64}`}
                 alt="Nova Act trade form screenshot"
@@ -325,9 +325,9 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
                 { label: 'Shares', value: tradeDraft.shares },
                 { label: 'Est. Total', value: `$${tradeDraft.est_total.toLocaleString()}` },
               ].map(({ label, value, color }) => (
-                <div key={label} className="bg-[#0a0b0f] rounded-lg p-2">
+                <div key={label} className="bg-app rounded-lg p-2">
                   <div className="text-xs text-slate-500 mb-1">{label}</div>
-                  <div className={`text-sm font-bold font-mono ${color ?? 'text-white'}`}>{value}</div>
+                  <div className={`text-sm font-semibold font-mono ${color ?? 'text-content-primary'}`}>{value}</div>
                 </div>
               ))}
             </div>
@@ -335,7 +335,7 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
             {/* Actions */}
             <div className="flex gap-3">
               <button onClick={() => setTradeDraft(null)}
-                className="flex-1 py-2.5 rounded-xl border border-[#1e2130] text-slate-400 hover:text-white hover:border-slate-600 transition-colors text-sm">
+                className="flex-1 py-2.5 rounded-xl border border-border text-content-secondary hover:text-content-primary hover:border-content-tertiary transition-colors text-sm">
                 Cancel
               </button>
               <button

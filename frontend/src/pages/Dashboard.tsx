@@ -24,8 +24,8 @@ export function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Real-time market intelligence</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-content-primary">Dashboard</h1>
+          <p className="text-sm text-content-secondary mt-0.5">Real-time market intelligence</p>
         </div>
         <WebSocketStatus />
       </div>
@@ -40,10 +40,10 @@ export function Dashboard() {
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="card">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-slate-400">{label}</span>
+              <span className="text-sm font-medium text-content-secondary">{label}</span>
               <Icon className={`w-4 h-4 ${color}`} />
             </div>
-            <div className="text-2xl font-bold font-mono">{value}</div>
+            <div className="text-3xl font-semibold tracking-tight font-mono text-content-primary">{value}</div>
           </div>
         ))}
       </div>
@@ -52,12 +52,12 @@ export function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Live Alerts Stream */}
         <div className="lg:col-span-2 space-y-3">
-          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+          <h2 className="text-base font-medium text-content-primary flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
             Live Alerts
           </h2>
           {liveAlerts.length === 0 && recentAlerts.length === 0 && (
-            <div className="card text-center py-12 text-slate-500">
+            <div className="card text-center py-12 text-content-secondary">
               <Zap className="w-8 h-8 mx-auto mb-2 opacity-30" />
               <p className="text-sm">Waiting for signals...</p>
               <p className="text-xs mt-1">Connect your watchlist to start receiving alerts</p>

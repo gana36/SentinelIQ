@@ -31,7 +31,7 @@ export function Market() {
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-2">
         <BarChart2 className="w-5 h-5 text-emerald-400" />
-        <h1 className="text-2xl font-bold">Market</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-content-primary">Market</h1>
       </div>
 
       <form onSubmit={e => { e.preventDefault(); setTicker(search.toUpperCase()) }} className="flex gap-2">
@@ -51,27 +51,27 @@ export function Market() {
           {/* Quote card */}
           <div className="card space-y-4">
             <div>
-              <div className="text-xs text-slate-400 mb-0.5">CURRENT PRICE</div>
-              <div className="text-4xl font-mono font-bold">${quote.price.toFixed(2)}</div>
+              <div className="text-sm font-medium text-content-secondary mb-0.5">Current Price</div>
+              <div className="text-4xl font-mono font-semibold tracking-tight text-content-primary">${quote.price.toFixed(2)}</div>
               <div className={`text-sm font-mono mt-1 ${quote.change_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                 {quote.change_pct >= 0 ? '+' : ''}{quote.change_pct.toFixed(2)}% today
               </div>
             </div>
-            <div className="space-y-3 pt-2 border-t border-[#1e2130]">
+            <div className="space-y-3 pt-2 border-t border-border">
               <div>
-                <div className="text-xs text-slate-400 mb-1">Volume: {quote.volume.toLocaleString()}</div>
+                <div className="text-sm font-medium text-content-secondary mb-1">Volume: {quote.volume.toLocaleString()}</div>
                 <ConfidenceBar value={Math.min(Math.abs(quote.volume_zscore) / 4, 1)} label="Volume Anomaly Score" />
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-[#0a0b0f] rounded p-2">
-                  <div className="text-slate-500">Vol Z-Score</div>
-                  <div className={`font-mono font-bold mt-0.5 ${Math.abs(quote.volume_zscore) > 2 ? 'text-yellow-400' : 'text-slate-300'}`}>
+                <div className="bg-app rounded p-2">
+                  <div className="text-sm font-medium text-content-secondary">Vol Z-Score</div>
+                  <div className={`font-mono font-semibold tracking-tight mt-0.5 ${Math.abs(quote.volume_zscore) > 2 ? 'text-yellow-400' : 'text-slate-300'}`}>
                     {quote.volume_zscore.toFixed(2)}σ
                   </div>
                 </div>
-                <div className="bg-[#0a0b0f] rounded p-2">
-                  <div className="text-slate-500">Ticker</div>
-                  <div className="font-mono font-bold mt-0.5 text-emerald-400">${quote.ticker}</div>
+                <div className="bg-app rounded p-2">
+                  <div className="text-sm font-medium text-content-secondary">Ticker</div>
+                  <div className="font-mono font-semibold tracking-tight mt-0.5 text-emerald-400">${quote.ticker}</div>
                 </div>
               </div>
             </div>
@@ -79,7 +79,7 @@ export function Market() {
 
           {/* Mini chart */}
           <div className="lg:col-span-2 card">
-            <div className="text-xs text-slate-400 mb-3">PRICE (SIMULATED)</div>
+            <div className="text-sm font-medium text-content-secondary mb-3">Price (Simulated)</div>
             <ResponsiveContainer width="100%" height={180}>
               <AreaChart data={mockChartData}>
                 <defs>
@@ -90,8 +90,8 @@ export function Market() {
                 </defs>
                 <XAxis dataKey="t" tick={{ fill: '#6b7280', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} axisLine={false} tickLine={false} domain={['auto', 'auto']} />
-                <Tooltip contentStyle={{ background: '#111318', border: '1px solid #1e2130', borderRadius: 8, fontSize: 12 }}
-                  itemStyle={{ color: '#10b981' }} labelStyle={{ color: '#6b7280' }} />
+                <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 12, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+                  itemStyle={{ color: '#10b981' }} labelStyle={{ color: '#64748b' }} />
                 <Area type="monotone" dataKey="price" stroke="#10b981" strokeWidth={2} fill="url(#priceGrad)" dot={false} />
               </AreaChart>
             </ResponsiveContainer>
@@ -101,7 +101,7 @@ export function Market() {
 
       {/* News */}
       <div>
-        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Latest News</h2>
+        <h2 className="text-base font-medium text-content-primary mb-3">Latest News</h2>
         {newsLoading && <Spinner />}
         <div className="space-y-2">
           {(news ?? []).map((item, i) => (

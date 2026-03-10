@@ -15,15 +15,15 @@ export function Sidebar() {
   const { unreadCount, resetUnread, setToken } = useStore()
 
   return (
-    <aside className="w-56 flex-shrink-0 bg-[#0d0e14] border-r border-[#1e2130] flex flex-col">
+    <aside className="w-56 flex-shrink-0 bg-page border-r border-border flex flex-col">
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-[#1e2130]">
+      <div className="px-4 py-5 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-emerald-500 rounded-lg flex items-center justify-center">
             <Zap className="w-4 h-4 text-black" />
           </div>
           <div>
-            <div className="font-bold text-sm text-white leading-none">SentinelIQ</div>
+            <div className="font-semibold tracking-tight text-sm text-content-primary leading-none">SentinelIQ</div>
             <div className="text-[10px] text-slate-500 mt-0.5">Market Intelligence</div>
           </div>
         </div>
@@ -35,12 +35,12 @@ export function Sidebar() {
           <NavLink key={to} to={to} end={to === '/'}
             className={({ isActive }) =>
               `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors relative
-               ${isActive ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-400 hover:text-white hover:bg-white/5'}`
+               ${isActive ? 'bg-surface-selected text-content-primary' : 'text-content-secondary hover:text-content-primary hover:bg-surface-hover'}`
             }>
             <Icon className="w-4 h-4 flex-shrink-0" />
             {label}
             {label === 'Alerts' && unreadCount > 0 && (
-              <span className="ml-auto bg-emerald-500 text-black text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[1.2rem] text-center">
+              <span className="ml-auto bg-emerald-500 text-black text-xs font-medium px-1.5 py-0.5 rounded-full min-w-[1.2rem] text-center">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
@@ -49,7 +49,7 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom */}
-      <div className="px-3 py-3 border-t border-[#1e2130] space-y-2">
+      <div className="px-3 py-3 border-t border-border space-y-2">
         <WebSocketStatus />
         <button onClick={() => { setToken(null); resetUnread() }}
           className="flex items-center gap-2 text-xs text-slate-500 hover:text-red-400 transition-colors w-full px-1">

@@ -44,10 +44,10 @@ export function Alerts() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Bell className="w-5 h-5 text-emerald-400" />
-          <h1 className="text-2xl font-bold">Alerts</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-content-primary">Alerts</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-slate-400" />
+          <Filter className="w-4 h-4 text-content-secondary" />
           {(['all', 'unread'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
               className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors capitalize
@@ -70,7 +70,7 @@ export function Alerts() {
       {isLoading && <div className="flex justify-center py-12"><Spinner size="lg" /></div>}
 
       {!isLoading && alerts.length === 0 && (
-        <div className="card text-center py-16 text-slate-500">
+        <div className="card text-center py-16 text-content-secondary">
           <Bell className="w-10 h-10 mx-auto mb-3 opacity-20" />
           <p>No {filter === 'unread' ? 'unread ' : ''}alerts yet</p>
         </div>
