@@ -30,3 +30,4 @@ instance-config.json
 # Logs
 *.log
 backend.log
+frontend/amplify
