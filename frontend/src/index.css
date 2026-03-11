@@ -3,18 +3,37 @@
 @tailwind utilities;
 
 @layer base {
-  body { @apply bg-[#0a0b0f] text-white; }
-  ::-webkit-scrollbar { @apply w-1.5; }
-  ::-webkit-scrollbar-track { @apply bg-transparent; }
-  ::-webkit-scrollbar-thumb { @apply bg-slate-700 rounded-full; }
+  body {
+    @apply bg-app text-content-primary font-sans antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-1.5;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+  }
 }
 
 @layer components {
-  .card { @apply bg-[#111318] border border-[#1e2130] rounded-xl p-4; }
-  .btn-primary { @apply bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed; }
-  .btn-ghost { @apply text-slate-400 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-colors; }
-  .input { @apply bg-[#1a1d27] border border-[#1e2130] rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition-colors w-full; }
-  .badge-positive { @apply bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 text-xs px-2 py-0.5 rounded-full font-medium; }
-  .badge-negative { @apply bg-red-500/15 text-red-400 border border-red-500/20 text-xs px-2 py-0.5 rounded-full font-medium; }
-  .badge-neutral { @apply bg-slate-500/15 text-slate-400 border border-slate-500/20 text-xs px-2 py-0.5 rounded-full font-medium; }
+  .card {
+    @apply bg-card border border-border rounded-xl p-5 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply bg-content-primary hover:bg-slate-800 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply text-content-secondary hover:text-content-primary hover:bg-surface-hover px-3 py-2 rounded-lg transition-colors;
+  }
+
+  .input {
+    @apply bg-white border border-border rounded-lg px-3 py-2 text-content-primary placeholder-content-tertiary focus:outline-none focus:border-content-secondary focus:ring-1 focus:ring-content-secondary transition-colors w-full shadow-sm;
+  }
 }

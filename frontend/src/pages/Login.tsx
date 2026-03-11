@@ -29,14 +29,11 @@ export function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0b0f] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-app px-4">
       <div className="w-full max-w-sm">
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center mb-4 shadow-[0_0_40px_rgba(16,185,129,0.3)]">
-            <Zap className="w-6 h-6 text-black" />
-          </div>
-          <h1 className="text-2xl font-bold text-white">SentinelIQ</h1>
-          <p className="text-slate-400 text-sm mt-1">Autonomous Market Intelligence</p>
+        <div className="flex flex-col items-center mb-10">
+          <div className="font-bold tracking-tighter text-3xl text-slate-900 leading-none">SentinelIQ</div>
+          <div className="text-[10px] font-bold text-slate-400 tracking-[0.2em] uppercase mt-2">Market Intelligence Platform</div>
         </div>
 
         <form onSubmit={submit} className="card space-y-4">

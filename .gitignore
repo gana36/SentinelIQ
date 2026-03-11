@@ -26,4 +26,8 @@ frontend/node_modules/
 # AWS deployment configs (contain secrets)
 source-config.json
 instance-config.json
+
+# Logs
+*.log
+backend.log
 frontend/amplify
