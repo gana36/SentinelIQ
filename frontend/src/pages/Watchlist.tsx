@@ -69,7 +69,13 @@ export function Watchlist() {
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault()
-    if (input.trim()) add.mutate(input.trim().toUpperCase())
+    const ticker = input.trim().toUpperCase()
+    if (!ticker) return
+    if (!/^[A-Z]{1,5}$/.test(ticker)) {
+      toast.error('Enter a valid ticker symbol (e.g. AAPL, MSFT)')
+      return
+    }
+    add.mutate(ticker)
   }
 
   return (

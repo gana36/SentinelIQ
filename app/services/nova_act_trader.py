@@ -47,9 +47,15 @@ async def execute_trade(
     action: str,
     shares: int,
     est_price: float,
+    alpaca_key: str = "",
+    alpaca_secret: str = "",
 ) -> TradeDraft:
-    """Execute via Alpaca Paper Trading REST API. Falls back to mock if keys missing."""
-    if settings.mock_mode or not settings.alpaca_api_key:
+    """Execute via Alpaca Paper Trading REST API. Falls back to mock if keys missing.
+    User-supplied alpaca_key/alpaca_secret override the system-configured keys."""
+    api_key = alpaca_key.strip() or settings.alpaca_api_key
+    api_secret = alpaca_secret.strip() or settings.alpaca_api_secret
+
+    if settings.mock_mode or not api_key:
         return _mock_execute(ticker, action, shares, est_price)
 
     try:
@@ -67,8 +73,8 @@ async def execute_trade(
             resp = await client.post(
                 "https://paper-api.alpaca.markets/v2/orders",
                 headers={
-                    "APCA-API-KEY-ID": settings.alpaca_api_key,
-                    "APCA-API-SECRET-KEY": settings.alpaca_api_secret,
+                    "APCA-API-KEY-ID": api_key,
+                    "APCA-API-SECRET-KEY": api_secret,
                 },
                 json={
                     "symbol": ticker,

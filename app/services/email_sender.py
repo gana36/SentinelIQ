@@ -325,7 +325,7 @@ async def send_full_alert_email(
       <!-- Proceed with Trade button -->
       {f'''
       <div style="text-align:center;margin-top:24px;">
-        <a href="{settings.app_base_url}/api/v1/trade/confirm?token={trade_token}"
+        <a href="{settings.frontend_url}/trade/confirm?token={trade_token}"
            style="display:inline-block;background:{trade_color};color:#ffffff;font-weight:700;
                   font-size:14px;padding:14px 32px;border-radius:8px;text-decoration:none;
                   letter-spacing:0.3px;">

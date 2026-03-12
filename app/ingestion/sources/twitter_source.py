@@ -17,19 +17,35 @@ from app.ingestion.normalizer import RawSignal
 from app.utils.logger import logger
 from app.utils.ticker_resolver import resolve_ticker
 
-POLL_INTERVAL = 1800  # 30 minutes — cost-conscious for Pay Per Use ($0.005/tweet × 10 = $0.05/poll)
+POLL_INTERVAL = settings.demo_twitter_poll_interval_seconds if settings.demo_mode else 1800  # demo: 60s, prod: 1800s
 TWITTER_SEARCH_URL = "https://api.twitter.com/2/tweets/search/recent"
+WATCHLIST_REFRESH_INTERVAL = 300  # re-fetch watchlisted tickers every 5 minutes
 
-# Tickers to track via cashtag — pulled from a static default + any injected tickers
-DEFAULT_TICKERS = ["TSLA", "AAPL", "NVDA", "META", "SPY", "MSFT", "AMZN", "GOOGL"]
+FALLBACK_TICKERS = ["AAPL"]
 
 # Max tweets per poll (API max is 100 per request on Basic tier, 10 on Free)
 MAX_RESULTS = 10
 
 
+async def _get_watched_tickers() -> list[str]:
+    """Return the union of all users' watchlists from DB. Falls back to hardcoded list."""
+    try:
+        from sqlalchemy import select
+        from app.db.session import AsyncSessionLocal
+        from app.db.models import WatchlistItem
+
+        async with AsyncSessionLocal() as db:
+            result = await db.execute(select(WatchlistItem.ticker).distinct())
+            tickers = [row[0] for row in result.fetchall()]
+            return tickers if tickers else FALLBACK_TICKERS
+    except Exception as e:
+        logger.warning("twitter_watchlist_fetch_failed", error=str(e))
+        return FALLBACK_TICKERS
+
+
 def _build_query(tickers: list[str]) -> str:
-    """Build Twitter search query for cashtag mentions."""
-    cashtags = " OR ".join(f"${t}" for t in tickers[:10])  # API limit on OR clauses
+    """Build Twitter search query for cashtag mentions. API limits OR clauses to ~10."""
+    cashtags = " OR ".join(f"${t}" for t in tickers[:10])
     return f"({cashtags}) lang:en -is:retweet -is:reply"
 
 
@@ -40,11 +56,20 @@ async def stream() -> AsyncIterator[RawSignal]:
 
     headers = {"Authorization": f"Bearer {settings.twitter_bearer_token}"}
     seen_ids: set[str] = set()
+    watched_tickers = await _get_watched_tickers()
+    last_watchlist_refresh = asyncio.get_event_loop().time()
 
     async with httpx.AsyncClient(timeout=20.0) as client:
         while True:
+            # Refresh watchlist periodically so new user tickers are picked up
+            now = asyncio.get_event_loop().time()
+            if now - last_watchlist_refresh >= WATCHLIST_REFRESH_INTERVAL:
+                watched_tickers = await _get_watched_tickers()
+                last_watchlist_refresh = now
+                logger.info("twitter_watchlist_refreshed", ticker_count=len(watched_tickers))
+
             try:
-                query = _build_query(DEFAULT_TICKERS)
+                query = _build_query(watched_tickers)
                 params = {
                     "query": query,
                     "max_results": MAX_RESULTS,

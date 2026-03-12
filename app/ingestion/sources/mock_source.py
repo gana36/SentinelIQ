@@ -44,7 +44,7 @@ _DEFAULT_EVENTS = [
 
 async def stream(interval: int | None = None) -> AsyncIterator[RawSignal]:
     """Replays demo events in a loop. Used when MOCK_MODE=true."""
-    interval = interval or settings.mock_event_interval_seconds
+    interval = interval or (settings.demo_mock_event_interval_seconds if settings.demo_mode else settings.mock_event_interval_seconds)
 
     # Try loading from file first
     demo_path = Path("data/demo_events.json")
