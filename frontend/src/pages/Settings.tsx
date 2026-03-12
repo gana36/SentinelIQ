@@ -3,11 +3,16 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { getPreferences, updatePreferences } from '../api/auth'
 import { injectSignal } from '../api/market'
 import toast from 'react-hot-toast'
+import { Eye, EyeOff } from 'lucide-react'
 
 export function Settings() {
   const { data: prefs, refetch } = useQuery({ queryKey: ['prefs'], queryFn: () => getPreferences().then(r => r.data) })
   const [risk, setRisk] = useState<string>('')
   const [sensitivity, setSensitivity] = useState<number | ''>('')
+  const [alpacaKey, setAlpacaKey] = useState(() => localStorage.getItem('alpaca_key') || '')
+  const [alpacaSecret, setAlpacaSecret] = useState(() => localStorage.getItem('alpaca_secret') || '')
+  const [showKey, setShowKey] = useState(false)
+  const [showSecret, setShowSecret] = useState(false)
   const [demoTicker, setDemoTicker] = useState('TSLA')
   const [demoEvent, setDemoEvent] = useState('earnings_beat')
   const [injecting, setInjecting] = useState(false)
@@ -73,6 +78,61 @@ export function Settings() {
           disabled={update.isPending} className="w-full py-2.5 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm">
           {update.isPending ? 'Saving...' : 'Save Preferences'}
         </button>
+      </div>
+
+      {/* Alpaca API Keys */}
+      <div className="card space-y-6">
+        <div className="pb-4 border-b border-slate-100">
+          <h2 className="text-base font-bold text-slate-900">Alpaca Paper Trading</h2>
+          <p className="text-xs text-slate-400 mt-1">Your keys are stored in browser session only — never sent to our servers except during trade execution.</p>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 block">API Key ID</label>
+            <div className="relative">
+              <input
+                type={showKey ? 'text' : 'password'}
+                placeholder="PK..."
+                value={alpacaKey}
+                onChange={e => setAlpacaKey(e.target.value)}
+                className="w-full px-3 py-2 pr-10 border border-slate-200 rounded-lg text-sm font-mono bg-slate-50 focus:bg-white focus:outline-none focus:border-slate-900 transition-colors"
+              />
+              <button type="button" onClick={() => setShowKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700">
+                {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+          <div>
+            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 block">Secret Key</label>
+            <div className="relative">
+              <input
+                type={showSecret ? 'text' : 'password'}
+                placeholder="••••••••••••••••"
+                value={alpacaSecret}
+                onChange={e => setAlpacaSecret(e.target.value)}
+                className="w-full px-3 py-2 pr-10 border border-slate-200 rounded-lg text-sm font-mono bg-slate-50 focus:bg-white focus:outline-none focus:border-slate-900 transition-colors"
+              />
+              <button type="button" onClick={() => setShowSecret(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700">
+                {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => { localStorage.setItem('alpaca_key', alpacaKey); localStorage.setItem('alpaca_secret', alpacaSecret); toast.success('Alpaca keys saved') }}
+            className="flex-1 py-2.5 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm">
+            Save Keys
+          </button>
+          {(localStorage.getItem('alpaca_key')) && (
+            <button
+              onClick={() => { localStorage.removeItem('alpaca_key'); localStorage.removeItem('alpaca_secret'); setAlpacaKey(''); setAlpacaSecret(''); toast.success('Keys cleared') }}
+              className="px-4 py-2.5 rounded-lg border border-red-200 text-red-500 text-sm font-bold hover:bg-red-50 transition-colors">
+              Clear
+            </button>
+          )}
+        </div>
+        <p className="text-[11px] text-slate-400">Get free paper trading keys at <a href="https://alpaca.markets" target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline">alpaca.markets</a>. Keys are saved in your browser only — never on our servers.</p>
       </div>
 
       {/* Demo Controls */}

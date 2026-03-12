@@ -106,15 +106,15 @@ export function Market() {
         <div className="space-y-2">
           {(news ?? []).map((item, i) => (
             <a key={i} href={item.url} target="_blank" rel="noopener noreferrer"
-              className="card flex items-start gap-3 hover:border-slate-600 transition-colors group no-underline">
+              className="card flex items-start gap-3 hover:border-slate-300 transition-colors group no-underline">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-slate-200 group-hover:text-white transition-colors line-clamp-2">{item.title}</p>
+                <p className="text-sm text-slate-800 group-hover:text-slate-900 transition-colors line-clamp-2 font-medium">{item.title}</p>
                 <div className="flex items-center gap-2 mt-1.5">
                   <span className="text-xs text-slate-500">{item.source}</span>
-                  <span className="text-xs text-slate-600">{item.published_at ? new Date(item.published_at).toLocaleDateString() : ''}</span>
+                  <span className="text-xs text-slate-400">{item.published_at ? new Date(item.published_at).toLocaleDateString() : ''}</span>
                 </div>
               </div>
-              <ExternalLink className="w-4 h-4 text-slate-600 group-hover:text-slate-400 flex-shrink-0 mt-0.5 transition-colors" />
+              <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-slate-600 flex-shrink-0 mt-0.5 transition-colors" />
             </a>
           ))}
         </div>

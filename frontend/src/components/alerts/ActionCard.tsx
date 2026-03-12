@@ -28,6 +28,9 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
   const [executeLoading, setExecuteLoading] = useState(false)
   const [tradeDraft, setTradeDraft] = useState<TradeDraft | null>(null)
   const [tradeExecuted, setTradeExecuted] = useState<TradeDraft | null>(null)
+  const [orderEditor, setOrderEditor] = useState(false)
+  const [orderAction, setOrderAction] = useState<'buy' | 'sell'>('buy')
+  const [orderShares, setOrderShares] = useState(1)
 
   const nova = card.nova_analysis ?? {}
   const isUnread = alert && !alert.read_at
@@ -53,13 +56,14 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
     }
   }
 
-  const handleDraftTrade = async (action: 'buy' | 'sell') => {
+  const handleDraftTrade = async () => {
+    setOrderEditor(false)
     setTradeLoading(true)
     try {
       const res = await draftTrade({
         ticker: card.ticker,
-        action,
-        shares: 1,
+        action: orderAction,
+        shares: orderShares,
         est_price: card.nova_analysis?.confidence_level ? card.nova_analysis.confidence_level * 1000 : 100,
       })
       setTradeDraft(res.data)
@@ -79,6 +83,8 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
         action: tradeDraft.action,
         shares: tradeDraft.shares,
         est_price: tradeDraft.est_price,
+        alpaca_key: localStorage.getItem('alpaca_key') ?? undefined,
+        alpaca_secret: localStorage.getItem('alpaca_secret') ?? undefined,
       })
       setTradeDraft(null)
       setTradeExecuted(res.data)
@@ -239,7 +245,7 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
               <span className="text-[11px] font-bold font-mono text-slate-400 uppercase">{new Date(card.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={(e) => { e.stopPropagation(); handleDraftTrade('buy') }}
+              <button onClick={(e) => { e.stopPropagation(); setOrderEditor(true) }}
                 disabled={tradeLoading}
                 className="text-[11px] font-bold px-4 py-1.5 rounded bg-slate-900 text-white hover:bg-slate-800 transition-all uppercase tracking-widest shadow-sm">
                 {tradeLoading ? 'Preparing...' : 'Draft Position'}
@@ -254,6 +260,67 @@ export function ActionCard({ alert, card: cardProp, compact, onRead, onDelete }:
             </div>
           </div>
         </>
+      )}
+
+      {/* Order Editor Modal */}
+      {orderEditor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]"
+          onClick={() => setOrderEditor(false)}>
+          <div className="bg-white border border-slate-200 rounded-xl p-8 w-full max-w-sm mx-4 shadow-2xl"
+            onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold tracking-tight text-slate-900">Configure Order</h3>
+                <p className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">${card.ticker} &mdash; Alpaca Paper Trade</p>
+              </div>
+              <button onClick={() => setOrderEditor(false)} className="p-1 text-slate-400 hover:text-slate-900"><X className="w-4 h-4" /></button>
+            </div>
+
+            {/* Buy / Sell toggle */}
+            <div className="mb-5">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Order Type</div>
+              <div className="flex rounded-lg border border-slate-200 overflow-hidden">
+                <button
+                  onClick={() => setOrderAction('buy')}
+                  className={`flex-1 py-2.5 text-sm font-bold uppercase tracking-widest transition-all ${orderAction === 'buy' ? 'bg-emerald-500 text-white' : 'text-slate-500 hover:bg-slate-50'}`}>
+                  Buy
+                </button>
+                <button
+                  onClick={() => setOrderAction('sell')}
+                  className={`flex-1 py-2.5 text-sm font-bold uppercase tracking-widest transition-all ${orderAction === 'sell' ? 'bg-red-500 text-white' : 'text-slate-500 hover:bg-slate-50'}`}>
+                  Sell
+                </button>
+              </div>
+            </div>
+
+            {/* Shares */}
+            <div className="mb-8">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Number of Shares</div>
+              <div className="flex items-center gap-3">
+                <button onClick={() => setOrderShares(s => Math.max(1, s - 1))}
+                  className="w-9 h-9 rounded-lg border border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-900 font-bold text-lg transition-all flex items-center justify-center">−</button>
+                <input
+                  type="number" min={1} max={9999} value={orderShares}
+                  onChange={e => setOrderShares(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="flex-1 text-center text-lg font-bold text-slate-900 border border-slate-200 rounded-lg py-2 focus:outline-none focus:border-slate-400"
+                />
+                <button onClick={() => setOrderShares(s => s + 1)}
+                  className="w-9 h-9 rounded-lg border border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-900 font-bold text-lg transition-all flex items-center justify-center">+</button>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button onClick={() => setOrderEditor(false)}
+                className="flex-1 py-3 text-sm font-bold text-slate-500 hover:text-slate-900 uppercase tracking-widest transition-colors">
+                Cancel
+              </button>
+              <button onClick={handleDraftTrade}
+                className={`flex-1 py-3 text-white font-bold text-sm uppercase tracking-widest rounded-lg transition-all shadow-lg ${orderAction === 'buy' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-red-500 hover:bg-red-600'}`}>
+                Preview Draft
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Modals: Simple Grayscale aesthetics */}

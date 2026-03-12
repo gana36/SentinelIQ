@@ -1,9 +1,12 @@
+import os
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+_env_file = os.environ.get("ENV_FILE", ".env")
+
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(env_file=_env_file, env_file_encoding="utf-8", extra="ignore")
 
     # App
     secret_key: str = "dev-secret-change-me"
@@ -11,6 +14,7 @@ class Settings(BaseSettings):
     environment: str = "development"
     access_token_expire_minutes: int = 60 * 24  # 1 day
     app_base_url: str = "http://localhost:8000"  # used for email confirm links
+    frontend_url: str = "http://localhost:5173"  # React app URL for email deep links
 
     # Database
     database_url: str = "postgresql+asyncpg://sentinel:sentinel@localhost:5432/sentineliq"
@@ -28,6 +32,7 @@ class Settings(BaseSettings):
 
     # Data Sources
     newsapi_key: str = ""
+    finlight_api_key: str = ""
     reddit_client_id: str = ""
     reddit_client_secret: str = ""
     reddit_user_agent: str = "SentinelIQ/1.0"
@@ -42,6 +47,13 @@ class Settings(BaseSettings):
     # Pipeline
     mock_event_interval_seconds: int = 30
     signal_queue_maxsize: int = 500
+
+    # Demo mode — speeds up all polling intervals for live demos/videos
+    # Set DEMO_MODE=true in .env.demo; leave false for deployed/production
+    demo_mode: bool = False
+    demo_mock_event_interval_seconds: int = 5   # mock events every 5s (vs 30s)
+    demo_news_poll_interval_seconds: int = 30   # news every 30s (vs 300s)
+    demo_twitter_poll_interval_seconds: int = 60  # twitter every 60s (vs 1800s)
 
     # Nova Act + Alpaca
     nova_act_headless: bool = True  # set False locally to show browser during demo

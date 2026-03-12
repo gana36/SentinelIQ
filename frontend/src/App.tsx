@@ -7,6 +7,7 @@ import { Alerts } from './pages/Alerts'
 import { Watchlist } from './pages/Watchlist'
 import { Market } from './pages/Market'
 import { Settings } from './pages/Settings'
+import { TradeConfirm } from './pages/TradeConfirm'
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = useStore((s) => s.token)
@@ -18,6 +19,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/trade/confirm" element={<TradeConfirm />} />
         <Route path="/" element={<RequireAuth><Layout /></RequireAuth>}>
           <Route index element={<Dashboard />} />
           <Route path="alerts" element={<Alerts />} />

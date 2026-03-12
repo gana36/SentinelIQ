@@ -50,3 +50,4 @@ async def remove_ticker(
     )
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="Ticker not found in watchlist")
+    await db.commit()

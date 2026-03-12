@@ -31,3 +31,5 @@ instance-config.json
 *.log
 backend.log
 frontend/amplify
+instructions.txt
+.env.demo
