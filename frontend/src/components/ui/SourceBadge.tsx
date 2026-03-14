@@ -1,6 +1,6 @@
 export function SourceBadge({ source }: { source: string }) {
   return (
-    <span className="text-[10px] font-bold tracking-tight uppercase text-slate-400 bg-slate-50/50 px-1.5 py-0.5 rounded border border-slate-100">
+    <span className="text-[9px] font-bold tracking-widest uppercase text-slate-500 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-sm">
       {source}
     </span>
   )
