@@ -250,3 +250,7 @@ sentineliq/
 ---
 
 Built for the AWS Hackathon 2026 · Powered by Amazon Nova
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
